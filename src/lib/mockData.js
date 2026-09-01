@@ -3,10 +3,11 @@
 // "id" aquí representa el número de celular (así se identifica en preregistros).
 
 export const personasIniciales = [
-  { id: "3001234567", nombre: "Juan Pérez",   correo: "juan@correo.com" },
-  { id: "3007654321", nombre: "María López",  correo: "maria@correo.com" },
-  { id: "3012223344", nombre: "Carlos Gómez", correo: "carlos@correo.com" },
-  { id: "3019998877", nombre: "Ana Torres",   correo: "ana@correo.com" },
+  { id: "3001234567", nombre: "Juan Pérez",   correo: "juan@correo.com",   comunidad: "Comunidad Dropi" },
+  { id: "3007654321", nombre: "María López",  correo: "maria@correo.com",  comunidad: "Comunidad Winner" },
+  { id: "3012223344", nombre: "Carlos Gómez", correo: "carlos@correo.com", comunidad: "Comunidad Ecommerce Colombia" },
+  { id: "3019998877", nombre: "Ana Torres",   correo: "ana@correo.com",    comunidad: "Comunidad Atom" },
+  // Luis a propósito sin comunidad, para probar que la línea no se dibuja.
   { id: "3005556677", nombre: "Luis Ramírez", correo: "luis@correo.com" },
 ];
 

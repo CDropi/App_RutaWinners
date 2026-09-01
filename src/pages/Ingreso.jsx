@@ -3,9 +3,13 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Html5Qrcode } from 'html5-qrcode';
 import {
   EVENTO, MODO_PRUEBA, VIDEO_INTRO, IMAGEN_INTRO,
-  IMAGEN_POPUP_PROMO, IMAGEN_FONDO_LOGIN, LOGO_LOGIN, LOGO_APP, URL_REGISTRO_LANDING,
+  IMAGEN_POPUP_PROMO, IMAGEN_FONDO_LOGIN, IMAGEN_FONDO_PERFIL, LOGO_LOGIN, LOGO_APP, URL_REGISTRO_LANDING,
+  URL_POLITICA_DATOS,
   IMAGEN_MAPA_PLANO, STANDS, PREGUNTAS_EJEMPLO
 } from '../config.js';
+import {
+  POLITICA_DATOS, POLITICA_DATOS_TITULO, POLITICA_DATOS_ACTUALIZACION,
+} from '../politicaDatos.js';
 import {
   buscarPersonaPorId, obtenerTicketsDePersona, elegirDia,
   obtenerStandsCompletados, marcarStandCompletado,
@@ -101,14 +105,29 @@ export default function Ingreso() {
   const [standsCompletados, setStandsCompletados] = useState([]); // ids de stands ya "pre-desbloqueados"
   const [premios, setPremios] = useState({ seleccionados: [], confirmado: false, entregados: [] });
   const [premiosAbierto, setPremiosAbierto] = useState(false); // pantalla de elegir/ver premios
+  const [politicaAbierta, setPoliticaAbierta] = useState(false); // pantalla de política de datos
   const navHoleX = `${navActive * 50}%`;
 
   const videoRef = useRef(null);
 
   // ---- Fondo de la pantalla (solo la imagen) ----
+  // La pantalla de Perfil (tab 1) usa su propia imagen de fondo; todas las
+  // demás vistas (login, tickets, mapa, actividad de stand, premios) siguen
+  // usando el fondo general de la app.
+  const enPerfil = !!persona && !standActivo && !premiosAbierto && !politicaAbierta && navActive === 1;
   useEffect(() => {
-    document.body.style.backgroundImage = `url("${IMAGEN_FONDO_LOGIN}")`;
+    // Versión anterior (un solo fondo para toda la pantalla de ingreso):
+    // document.body.style.backgroundImage = `url("${IMAGEN_FONDO_LOGIN}")`;
+    const imagenFondo = enPerfil ? IMAGEN_FONDO_PERFIL : IMAGEN_FONDO_LOGIN;
+    document.body.style.backgroundImage = `url("${imagenFondo}")`;
     return () => { document.body.style.backgroundImage = ''; };
+  }, [enPerfil]);
+
+  // Precarga del fondo de Perfil para que al entrar al tab el cambio sea
+  // inmediato y no se vea el body sin imagen mientras descarga.
+  useEffect(() => {
+    const img = new Image();
+    img.src = IMAGEN_FONDO_PERFIL;
   }, []);
 
   // ---- Cortinilla de video ----
@@ -315,6 +334,14 @@ export default function Ingreso() {
           </div>
         )}
 
+        {persona && !standActivo && !premiosAbierto && politicaAbierta && (
+          <div className="app-shell">
+            <div className="app-scroll">
+              <PoliticaView onRegresar={() => setPoliticaAbierta(false)} />
+            </div>
+          </div>
+        )}
+
         {persona && !standActivo && premiosAbierto && (
           <div className="app-shell">
             <div className="app-scroll">
@@ -328,9 +355,15 @@ export default function Ingreso() {
           </div>
         )}
 
-        {persona && !standActivo && !premiosAbierto && (
+        {persona && !standActivo && !premiosAbierto && !politicaAbierta && (
           <div className="app-shell">
-            <div className={`app-scroll ${navActive === 2 ? 'app-scroll--full' : ''}`}>
+            {/* Perfil no scrollea: su contenido está pensado para caber en una
+                sola pantalla. */}
+            <div
+              className={`app-scroll ${navActive === 2 ? 'app-scroll--full' : ''} ${
+                navActive === 1 ? 'app-scroll--sin-scroll' : ''
+              }`}
+            >
               {navActive === 0 && (
                 <>
                   <div className="app-header">
@@ -398,6 +431,7 @@ export default function Ingreso() {
                   standsCompletados={standsCompletados}
                   premios={premios}
                   onAbrirPremios={() => setPremiosAbierto(true)}
+                  onAbrirPolitica={() => setPoliticaAbierta(true)}
                 />
               )}
               {navActive === 2 && (
@@ -1038,8 +1072,11 @@ function ActividadStand({ stand, persona, completado, standsCompletados, onCompl
           </h3>
           <div className="actividad-scanner-frame">
             <div id="reader-actividad" />
+            {/* Esquinas propias retiradas: html5-qrcode dibuja las suyas al
+                activar la cámara y se veían dobles. Por si se necesita revertir:
             <span className="actividad-scanner-corner tl" />
             <span className="actividad-scanner-corner br" />
+            */}
           </div>
       <p className="actividad-portada-nota">
             Escanea el QR del stand <strong>para validar tu visita</strong> y desbloquear su beneficio
@@ -1154,17 +1191,40 @@ function PremiosView({ standsCompletados, premios, onConfirmar, onRegresar }) {
   );
 }
 
-function PerfilView({ persona, standsCompletados, premios, onAbrirPremios }) {
+function PerfilView({ persona, standsCompletados, premios, onAbrirPremios, onAbrirPolitica }) {
   const total = STANDS.length;
   const completo = standsCompletados.length === total;
 
+  // La comunidad viene del documento de "preregistros" (campo "comunidad").
+  // Si el registro no la trae, no dibujamos esa línea para no dejar un hueco.
+  const comunidad = (persona.comunidad || '').trim();
+
   return (
     <div className="perfil-view">
+      {/* Mismo logo y mismo tamaño/espaciado que en la pestaña de Tickets:
+          reutiliza .app-header + .app-header-logo para que no se desfase. */}
+      <div className="app-header">
+        <img className="app-header-logo" src={LOGO_APP} alt="Logo" />
+      </div>
+
+      <div className="perfil-identidad">
+        <div className="perfil-identidad-pill">
+          <span className="perfil-identidad-icono" aria-hidden="true" />
+          <span className="perfil-identidad-nombre">{persona.nombre.toUpperCase()}</span>
+        </div>
+        {comunidad && (
+          <span className="perfil-identidad-comunidad">{comunidad.toUpperCase()}</span>
+        )}
+      </div>
+
+      {/* Saludo y aviso de próximas funciones, retirados por si se necesita revertir:
       <div className="app-header">
         <h1 className="app-greeting">Hola <strong>{persona.nombre.split(' ')[0].toUpperCase()}</strong></h1>
         <p className="app-greeting-sub">Más funciones de tu perfil, próximamente.</p>
       </div>
+      */}
 
+      {/* Tarjeta anterior (una sola fila clickeable), por si se necesita revertir:
       <button type="button" className="perfil-premios-card" onClick={onAbrirPremios}>
         <div className="perfil-premios-card-texto">
           <span className="perfil-premios-card-titulo">Mis premios — Ruta Winner</span>
@@ -1178,6 +1238,216 @@ function PerfilView({ persona, standsCompletados, premios, onAbrirPremios }) {
         </div>
         <span className="perfil-premios-card-flecha">→</span>
       </button>
+      */}
+
+      <div className="perfil-beneficios">
+        {/* Codi va antes del contenido para que quede por debajo del texto si
+            algún día se cruzan; su posicionamiento lo maneja el CSS. */}
+        <img className="perfil-beneficios-codi" src="/media/Codi_Perfil.png" alt="" />
+
+        {/* Barra de avance: ocupa todo el ancho de la tarjeta porque Codi está
+            anclado abajo y su cabeza nunca llega a esta altura. */}
+        <div className="perfil-beneficios-avance">
+          <div className="perfil-beneficios-avance-fila">
+            <img className="perfil-beneficios-avance-estrella" src="/media/Estrella.svg" alt="" />
+            <span className="perfil-beneficios-avance-titulo">
+              AVANCE <strong>RUTA WINNER</strong>
+            </span>
+          </div>
+          <div className="perfil-beneficios-avance-track">
+            <div
+              className="perfil-beneficios-avance-barra"
+              style={{ width: `${(standsCompletados.length / total) * 100}%` }}
+            />
+          </div>
+          <span className="perfil-beneficios-progreso">
+            {premios.confirmado
+              ? 'Ya confirmaste tu selección'
+              : completo
+                ? '¡Ya puedes elegir tus premios!'
+                : `${standsCompletados.length} de ${total} stands completados`}
+          </span>
+        </div>
+
+        <div className="perfil-beneficios-contenido">
+          <h2 className="perfil-beneficios-titulo">
+            Tus beneficios <strong>te esperan</strong>
+          </h2>
+          <p className="perfil-beneficios-texto">
+            Cada stand completado te acerca a más recompensas. Al final de tu Ruta Winner
+            puedes ver y reclamar todos los beneficios que desbloqueaste.
+          </p>
+          {/* Bloqueado hasta completar los 7 stands. El texto de arriba
+              ("x de 7 stands completados") ya explica por qué. */}
+          <button
+            type="button"
+            className="perfil-beneficios-btn"
+            disabled={!completo}
+            onClick={onAbrirPremios}
+          >
+            REDIMIR <strong>BENEFICIOS</strong>
+            <img className="perfil-beneficios-btn-flecha" src="/media/Arrow.svg" alt="" />
+          </button>
+        </div>
+      </div>
+
+      {/* Política de tratamiento de datos. Abre una pantalla dentro de la app.
+          Versión anterior, cuando era un enlace externo a dropi.co:
+      <a
+        className="perfil-politica"
+        href={URL_POLITICA_DATOS}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+      */}
+      <button type="button" className="perfil-politica" onClick={onAbrirPolitica}>
+        <img className="perfil-politica-icono" src="/media/Politica.svg" alt="" />
+        <span className="perfil-politica-texto">
+          <span className="perfil-politica-titulo">Política de tratamiento de datos</span>
+          <span className="perfil-politica-sub">Consulta cómo protegemos tu información</span>
+        </span>
+        <img className="perfil-politica-flecha" src="/media/Arrow.svg" alt="" />
+      </button>
+    </div>
+  );
+}
+
+function PoliticaView({ onRegresar }) {
+  // Acordeón: arranca con la primera sección (el preámbulo) abierta, igual
+  // que en la web. Guarda el id abierto, no el índice, para que no se
+  // desacomode si mañana se reordenan las secciones.
+  const [abierta, setAbierta] = useState(POLITICA_DATOS[0]?.id ?? null);
+
+  // Referencia al tope de la pantalla, para el "Volver arriba" de cada sección.
+  const topeRef = useRef(null);
+
+  function alternar(id) {
+    setAbierta(prev => (prev === id ? null : id));
+  }
+
+  function volverArriba() {
+    topeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  return (
+    <div className="politica-view" ref={topeRef}>
+      {/* Mismo botón circular de vidrio que usan las preguntas de los stands.
+          Versión anterior (píldora con texto "Regresar"):
+      <button type="button" className="stand-detalle-regresar" onClick={onRegresar}>
+        <span className="stand-detalle-regresar-flecha">←</span> Regresar
+      </button>
+      */}
+      {/* Fila superior: regresar a la izquierda y el logo a la derecha, a la
+          misma altura. */}
+      <div className="politica-barra-superior">
+        <button
+          type="button"
+          className="politica-regresar"
+          onClick={onRegresar}
+          aria-label="Regresar"
+        >
+          <img src="/media/Atras.svg" alt="" />
+        </button>
+        <img className="politica-logo" src={LOGO_APP} alt="Expo Winners" />
+      </div>
+
+      <div className="politica-encabezado">
+        {/* Línea de ruta retirada, por si se necesita revertir:
+        <p className="politica-migaja">
+          Legal <span>/ Política de Protección de Datos Personales</span>
+        </p>
+        */}
+        <h2 className="politica-titulo">{POLITICA_DATOS_TITULO}</h2>
+        {POLITICA_DATOS_ACTUALIZACION && (
+          <p className="politica-actualizacion">{POLITICA_DATOS_ACTUALIZACION}</p>
+        )}
+      </div>
+
+      <div className="politica-acordeon">
+        {POLITICA_DATOS.map(seccion => {
+          const estaAbierta = abierta === seccion.id;
+          return (
+            <section
+              className={`politica-item ${estaAbierta ? 'politica-item--abierta' : ''}`}
+              key={seccion.id}
+            >
+              <button
+                type="button"
+                className="politica-item-cabecera"
+                onClick={() => alternar(seccion.id)}
+                aria-expanded={estaAbierta}
+              >
+                {/* El punto del preámbulo se dibuja con CSS en vez de con el
+                    carácter "•", que queda descentrado dentro del círculo. */}
+                <span
+                  className={`politica-item-insignia ${
+                    seccion.insignia === '•' ? 'politica-item-insignia--punto' : ''
+                  }`}
+                >
+                  {seccion.insignia === '•' ? '' : seccion.insignia}
+                </span>
+                <span className="politica-item-titulo">
+                  {seccion.insignia !== '•' && `${seccion.insignia}. `}
+                  {seccion.titulo}
+                </span>
+                {/* Arrow.svg apunta a la derecha en el archivo: el CSS lo rota
+                    hacia abajo (cerrado) o hacia arriba (abierto). */}
+                <img className="politica-item-chevron" src="/media/Arrow.svg" alt="" />
+              </button>
+
+              {estaAbierta && (
+                <div className="politica-item-cuerpo">
+                  {seccion.bloques.map((bloque, i) => {
+                    if (bloque.tipo === 'subtitulo') {
+                      return (
+                        <h3 className="politica-subtitulo" key={i}>{bloque.texto}</h3>
+                      );
+                    }
+                    if (bloque.tipo === 'lista') {
+                      return (
+                        <ul className="politica-lista" key={i}>
+                          {bloque.items.map((item, j) => (
+                            <li key={j}>
+                              {item.termino && (
+                                <strong className="politica-lista-termino">
+                                  {item.termino}:
+                                </strong>
+                              )}{' '}
+                              {conNegrillas(item.texto)}
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    return (
+                      <p className="politica-parrafo" key={i}>{conNegrillas(bloque.texto)}</p>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    className="politica-volver-arriba"
+                    onClick={volverArriba}
+                  >
+                    ↑ Volver arriba
+                  </button>
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
+
+      {/* Respaldo: la versión oficial siempre vive en dropi.co, así que si el
+          texto de la app quedara desactualizado se puede verificar allá. */}
+      <a
+        className="politica-enlace-oficial"
+        href={URL_POLITICA_DATOS}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Ver la versión oficial en dropi.co
+      </a>
     </div>
   );
 }

@@ -40,6 +40,9 @@ export const IMAGEN_POPUP_PROMO = "/media/PIEZA-EXPOWINNER-APP.png";
 // 2.4) Imagen de fondo de toda la pantalla de ingreso (login + tabs de días).
 export const IMAGEN_FONDO_LOGIN = "/media/Fondo_Login.png";
 
+// 2.4.1) Imagen de fondo exclusiva de la pantalla de Perfil.
+export const IMAGEN_FONDO_PERFIL = "/media/Fondo_Perfil.png";
+
 // 2.5) Logo que aparece en la pantalla de bienvenida (login).
 export const LOGO_LOGIN = "/media/Logo_ExpoWinner.png";
 
@@ -51,6 +54,9 @@ export const LOGO_LOGIN_STAFF = "/media/Logo_ExpoWinner_Horizontal.png";
 
 // 2.6) URL de tu landing donde las personas se registran
 export const URL_REGISTRO_LANDING = "https://dropi.co/expowinners";
+
+// 2.6.1) Política de tratamiento de datos, se consulta desde la pestaña Perfil.
+export const URL_POLITICA_DATOS = "https://dropi.co/politica-privacidad";
 
 // 2.7) Mapa del recinto 
 export const IMAGEN_MAPA_PLANO = "/media/Fondo_Mapa.png";
@@ -170,8 +176,8 @@ export const STANDS = [
     logo: "/media/Logo_DropiPay.png",
     isotipo: "/media/Isotipo_DropiPay.png",
     bienvenida: "En dropiPay importas, pagas y accedes a crédito sin drama, **sin bancos y sin fronteras.**\n\nCuéntanos qué tanto conoces de **nuestra plataforma** y descubre algo que preparamos para ti.",
-    mensajeExito: null, // mensaje que se muestra al desbloquear el logro de esta marca (cuando lo tengas)
-    premio: { nombre: "Premio PAU", descripcion: "Descripción del premio de PAU (pendiente por definir)." },
+    mensajeExito: "Si eres **usuario registrado** en DropiPay, participas en el sorteo de **100 USDT** al final del día",
+    premio: { nombre: "Premio DropiPay", descripcion: "Descripción del premio de DropiPay (pendiente por definir)." },
     preguntas: [
       {
         texto: "¿Tiene costo generar una PayCard en dropiPay?",

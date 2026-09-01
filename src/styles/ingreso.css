@@ -796,6 +796,11 @@ h1{
 .app-scroll--full{padding:0;align-items:stretch;}
 .app-scroll--full > *{max-width:none;}
 
+/* Perfil: pantalla fija, sin scroll. Su contenido está pensado para caber
+   completo. OJO: si en el futuro se agregan secciones, lo que sobre queda
+   inalcanzable; en ese caso hay que volver a permitir el scroll. */
+.app-scroll--sin-scroll{overflow-y:hidden;}
+
 .mapa-view{
   width:100%;
   height:100%;
@@ -1993,6 +1998,8 @@ h1{
 }
 .actividad-scanner-frame #reader-actividad{width:100%;height:100%;}
 .actividad-scanner-frame #reader-actividad video{width:100% !important;height:100% !important;object-fit:cover;}
+/* Esquinas del diseño retiradas: html5-qrcode dibuja las suyas al activar la
+   cámara y quedaban dobles. Se dejan por si se necesita revertir.
 .actividad-scanner-corner{
   position:absolute;
   width:34px;height:34px;
@@ -2003,6 +2010,7 @@ h1{
 }
 .actividad-scanner-corner.tl{top:16px;left:16px;border-top-width:3px;border-left-width:3px;border-radius:10px 0 0 0;}
 .actividad-scanner-corner.br{bottom:16px;right:16px;border-bottom-width:3px;border-right-width:3px;border-radius:0 0 10px 0;}
+*/
 .actividad-scanner-error{
   font-size:12.5px;
   color:#fff;
@@ -2157,8 +2165,100 @@ h1{
 .premios-confirmar-btn{width:100%;}
 .premios-confirmar-btn:disabled{opacity:.4;cursor:default;}
 
+/* ---- Perfil: panel de identidad (nombre + comunidad) ----
+   Panel de vidrio con un resplandor naranja en los dos costados. El
+   resplandor va en un ::before por detrás del contenido, no en el
+   background del panel, para que el backdrop-filter siga viendo el fondo
+   de la pantalla y no se lave el naranja. */
+.perfil-identidad{
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  width:80%;
+  padding:14px 18px;
+  margin-bottom:20px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.20) 0%,
+    rgba(255,255,255,.06) 48%,
+    rgba(255,255,255,.11) 100%);
+  backdrop-filter:blur(5px) saturate(150%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.38),
+    inset 0 -1px 6px rgba(0,0,0,.20),
+    0 14px 32px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+/* Resplandor naranja de los costados. */
+.perfil-identidad::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(60% 120% at 0% 50%, rgba(255,106,26,.75) 0%, rgba(255,106,26,0) 62%),
+    radial-gradient(60% 120% at 100% 50%, rgba(255,106,26,.75) 0%, rgba(255,106,26,0) 62%);
+}
+
+.perfil-identidad-pill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  max-width:100%;
+  padding:7px 18px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(6,9,16,.78);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.6);
+}
+/* El SVG del icono es blanco (es el mismo que usa la barra de navegación).
+   Se pinta de naranja con una máscara en lugar de duplicar el archivo. */
+.perfil-identidad-icono{
+  flex-shrink:0;
+  width:15px;
+  height:18px;
+  background:var(--brand-orange);
+  -webkit-mask:url('/media/Perfil_2.svg') no-repeat center / contain;
+  mask:url('/media/Perfil_2.svg') no-repeat center / contain;
+}
+.perfil-identidad-nombre{
+  font-family:'Montserrat';
+  font-size:15px;
+  letter-spacing:.06em;
+  color:var(--paper);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.perfil-identidad-comunidad{
+  font-family:'Tusker';
+  font-size:23px;
+  line-height:1.05;
+  letter-spacing:.06em;
+  text-align:center;
+  color:var(--paper);
+}
+@media (max-width:360px){
+  .perfil-identidad-comunidad{font-size:20px;}
+  .perfil-identidad-nombre{font-size:13px;}
+}
+
 /* ---- Perfil (mínimo por ahora): tarjeta de acceso a premios ---- */
-.perfil-view{padding:8px 4px 24px;}
+.perfil-view{
+  padding:8px 4px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Tarjeta anterior de premios (una sola fila clickeable) ----
+   Reemplazada por .perfil-beneficios. Se deja por si se necesita revertir.
 .perfil-premios-card{
   display:flex;
   align-items:center;
@@ -2179,3 +2279,621 @@ h1{
 .perfil-premios-card-titulo{font-size:14px;font-weight:700;color:var(--paper);}
 .perfil-premios-card-sub{font-size:12px;color:var(--brand-orange);}
 .perfil-premios-card-flecha{font-size:18px;color:rgba(255,255,255,.5);flex-shrink:0;}
+*/
+
+/* ---- Tarjeta de beneficios (Ruta Winner) ----
+   Panel de vidrio con Codi asomado por la esquina superior derecha. El
+   personaje queda contenido dentro de la tarjeta (apoyado en el borde
+   inferior derecho), y overflow:hidden asegura que no se salga. */
+.perfil-beneficios{
+  position:relative;
+  width:100%;
+  /* El carril de Codi ya no se reserva aquí sino en .perfil-beneficios-contenido,
+     para que la barra de avance pueda ocupar todo el ancho de la tarjeta.
+     Versión anterior:
+  padding:18px 126px 18px 18px;
+  */
+  padding:18px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.16);
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.14) 0%,
+    rgba(255,255,255,.05) 52%,
+    rgba(255,255,255,.09) 100%);
+  /* Solo la propiedad estándar: Lightning CSS agrega el -webkit- en el build. */
+  backdrop-filter:blur(9px) saturate(150%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.30),
+    inset 0 -1px 6px rgba(0,0,0,.20),
+    0 14px 32px rgba(0,0,0,.40);
+  /* Codi va contenido dentro de la tarjeta, así que overflow:hidden garantiza
+     que ni el personaje ni su sombra se salgan de las esquinas redondeadas. */
+  overflow:hidden;
+  /* Alto mínimo: asegura que quepa el personaje completo aunque el texto se
+     acorte. Si la tarjeta quedara más baja, overflow:hidden lo cortaría por
+     la mitad. Es el alto visible de Codi (190px de archivo x 0.87 = 165px)
+     más los dos paddings de 18px.
+     Versión anterior, cuando Codi medía 172px: min-height:186px; */
+  min-height:204px;
+  /* Versión anterior, cuando el personaje sobresalía por arriba:
+  margin-top:34px;
+  */
+  margin-top:18px;
+}
+
+.perfil-beneficios-codi{
+  position:absolute;
+  /* El PNG trae aire transparente alrededor del personaje (el dibujo real
+     ocupa aprox. el 72% del ancho y el 87% del alto del archivo), así que
+     el ancho y el desplazamiento están calculados sobre el archivo completo,
+     no sobre lo que se ve. */
+  /* El aire derecho del archivo es 140/1080 del ancho (~13%), así que este
+     desplazamiento negativo solo compensa ese vacío: el dibujo queda unos
+     6px adentro del borde, no sobresaliendo.
+     Versión anterior, cuando sobresalía: right:-22px; bottom:-6px; */
+  right:-32px;
+  /* El dibujo llega hasta el borde inferior del archivo (no hay aire abajo),
+     así que bottom:0 apoya los pies exactamente en el borde de la tarjeta. */
+  bottom:0;
+  width:190px;
+  height:auto;
+  pointer-events:none;
+  /* Sombra propia del personaje para que no se vea pegado al vidrio.
+     Se reduce respecto a la versión anterior porque ahora la recorta el
+     overflow:hidden de la tarjeta y una sombra grande se vería cortada. */
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.40));
+}
+
+/* ---- Barra de avance de la Ruta Winner ---- */
+.perfil-beneficios-avance{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  margin-bottom:16px;
+}
+
+.perfil-beneficios-avance-fila{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.perfil-beneficios-avance-estrella{
+  width:20px;
+  height:20px;
+  flex-shrink:0;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.45));
+}
+
+.perfil-beneficios-avance-titulo{
+  font-family:'Montserrat',sans-serif;
+  font-weight:300;
+  font-size:13px;
+  letter-spacing:.06em;
+  color:var(--paper);
+  text-shadow:0 2px 6px rgba(0,0,0,.5);
+}
+.perfil-beneficios-avance-titulo strong{font-weight:700;}
+
+.perfil-beneficios-avance-track{
+  position:relative;
+  width:100%;
+  height:14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  /* Canal translúcido con sombra interna para el efecto de hueco. */
+  background:rgba(255,255,255,.14);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+
+.perfil-beneficios-avance-barra{
+  height:100%;
+  border-radius:999px;
+  /* Degradado del naranja de marca con un brillo arriba, como en la
+     referencia de diseño. */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 48%),
+    linear-gradient(90deg, #ED6F2D 0%, #FFA23D 100%);
+  transition:width .35s ease;
+}
+
+.perfil-beneficios-contenido{
+  position:relative;
+  z-index:1;
+  /* Reserva el carril donde va Codi para que el texto no se le meta debajo.
+     El dibujo empieza a 133px del borde derecho de la tarjeta (ancho 190px,
+     right:-32px, menos el 13% de aire del archivo), así que 118px + los 18px
+     de padding de la tarjeta dejan un par de píxeles de holgura. */
+  padding-right:118px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+}
+
+.perfil-beneficios-titulo{
+  margin:0;
+  font-family:'Montserrat',sans-serif;
+  font-weight:300;
+  font-size:14px;
+  line-height:1.25;
+  color:var(--paper);
+}
+.perfil-beneficios-titulo strong{font-weight:700;}
+
+.perfil-beneficios-texto{
+  margin:0;
+  font-size:10px;
+  line-height:1.5;
+  color:rgba(255,255,255,.82);
+}
+
+.perfil-beneficios-progreso{
+  font-size:11px;
+  font-weight:600;
+  color:var(--brand-orange);
+  /* Vive dentro de .perfil-beneficios-avance (columna flex), así que se alinea
+     al borde derecho de la barra con align-self, no con text-align. */
+  align-self:flex-end;
+}
+
+.perfil-beneficios-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:4px;
+  padding:8px 10px;
+  border-radius:999px;
+  background:var(--brand-orange);
+  color:#fff;
+  font-family:'Montserrat';
+  font-weight:100;
+  font-size:11px;
+  letter-spacing:.04em;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:0 8px 18px -8px rgb(169 69 15 / 90%)
+}
+.perfil-beneficios-btn strong{font-weight:800;}
+/* La regla genérica button:hover de base.css pinta el fondo dorado, así que
+   hay que redeclarar background en los tres estados. Van con :not(:disabled)
+   porque en CSS el :hover sí aplica sobre botones deshabilitados y volvería a
+   pintarlos de naranja.
+   Versión anterior, sin el estado bloqueado:
+.perfil-beneficios-btn:hover,
+.perfil-beneficios-btn:focus,
+.perfil-beneficios-btn:active{
+  outline:none;
+  background:var(--brand-orange);
+  color:#fff;
+}
+.perfil-beneficios-btn:active{transform:scale(.98);}
+*/
+.perfil-beneficios-btn:not(:disabled):hover,
+.perfil-beneficios-btn:not(:disabled):focus,
+.perfil-beneficios-btn:not(:disabled):active{
+  outline:none;
+  background:var(--brand-orange);
+  color:#fff;
+}
+.perfil-beneficios-btn:not(:disabled):active{transform:scale(.98);}
+
+/* Bloqueado hasta completar los 7 stands: pierde el naranja y queda como
+   vidrio apagado, igual que el botón "Reclamar premios" del mapa. */
+.perfil-beneficios-btn:disabled{
+  cursor:not-allowed;
+  color:rgba(255,255,255,.55);
+  background:linear-gradient(150deg,
+    rgba(255,255,255,.14) 0%,
+    rgba(255,255,255,.05) 100%);
+  border:1px solid rgba(255,255,255,.16);
+  /* Solo la propiedad estándar: Lightning CSS agrega el -webkit- en el build. */
+  backdrop-filter:blur(9px) saturate(140%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.22),
+    0 4px 12px rgba(0,0,0,.30);
+}
+
+.perfil-beneficios-btn-flecha{
+  width:7px;
+  height:auto;
+  flex-shrink:0;
+  margin-left: 5px;
+}
+/* El SVG de la flecha es blanco fijo, así que se atenúa aparte para que
+   acompañe al texto apagado. */
+.perfil-beneficios-btn:disabled .perfil-beneficios-btn-flecha{
+  opacity:.55;
+}
+
+/* ---- Pantalla de la política de tratamiento de datos ---- */
+.politica-view{padding:8px 4px 32px;}
+
+/* Fila superior de la pantalla: regresar a la izquierda, logo a la derecha.
+   space-between los separa a los extremos y center los deja a la misma
+   altura aunque tengan alturas distintas. */
+.politica-barra-superior{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+}
+.politica-logo{
+  height:34px;
+  width:auto;
+  object-fit:contain;
+  flex-shrink:0;
+}
+
+/* Botón de regresar: misma receta de vidrio que .actividad-regresar (el de las
+   preguntas de los stands). La diferencia es que allá va absoluto flotando
+   sobre la pantalla completa; aquí va en el flujo normal, porque esta pantalla
+   scrollea dentro de .app-scroll y un botón fijo taparía el encabezado. */
+.politica-regresar{
+  flex-shrink:0;
+  width:40px;height:40px;
+  margin:0;
+  padding:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  border:1px solid rgba(255,255,255,.25);
+  background:linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,.06));
+  /* Solo la propiedad estándar: Lightning CSS agrega el -webkit- en el build. */
+  backdrop-filter:blur(6px) saturate(140%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.25), inset 0 -1px 4px rgba(0,0,0,.15);
+}
+.politica-regresar img{width:17px;height:17px;}
+/* La regla genérica de base.css pinta el fondo dorado y aplica scale(.98):
+   hay que anular las dos en los tres estados. */
+.politica-regresar:hover,
+.politica-regresar:focus,
+.politica-regresar:active{
+  outline:none;
+  transform:none;
+  background:linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,.06));
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.25), inset 0 -1px 4px rgba(0,0,0,.15);
+}
+
+/* El vidrio de esta pantalla es gris oscuro en vez de blanco translúcido:
+   son bloques largos de texto y el vidrio claro dejaba pasar demasiado el
+   fondo naranja, restándole legibilidad.
+   Versión anterior (vidrio claro, como el resto de la app):
+.politica-encabezado{
+  padding:16px 18px 18px;
+  margin:14px 0 14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.12) 0%,
+    rgba(255,255,255,.04) 52%,
+    rgba(255,255,255,.08) 100%);
+  backdrop-filter:blur(9px) saturate(150%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.24),
+    0 10px 24px rgba(0,0,0,.35);
+}
+*/
+.politica-encabezado{
+  padding:16px 18px 18px;
+  margin:14px 0 14px;
+  border-radius:20px;
+  background:linear-gradient(160deg,
+    rgba(30,28,27,.80) 0%,
+    rgba(18,17,17,.86) 55%,
+    rgba(24,22,21,.82) 100%);
+  /* Solo la propiedad estándar: Lightning CSS agrega el -webkit- en el build. */
+  backdrop-filter:blur(14px) saturate(120%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.10),
+    0 12px 28px rgba(0,0,0,.45);
+}
+/* Línea de ruta retirada del JSX. Se deja por si se necesita revertir.
+.politica-migaja{
+  margin:0 0 8px;
+  font-size:10.5px;
+  letter-spacing:.04em;
+  color:var(--brand-orange);
+}
+.politica-migaja span{color:rgba(255,255,255,.55);}
+*/
+
+.politica-titulo{
+  margin:0;
+  font-family:'Tusker';
+  font-size:20px;
+  line-height:1.15;
+  color:var(--paper);
+  text-align: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.politica-actualizacion{
+  margin:8px 0 0;
+  font-size:11px;
+  color:rgba(255,255,255,.55);
+}
+
+/* Todas las secciones viven dentro de un mismo recuadro, como en la
+   referencia de diseño.
+   Versión anterior (ítems sueltos, sin contenedor):
+.politica-acordeon{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+*/
+.politica-acordeon{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:12px;
+  border-radius:20px;
+  background:linear-gradient(160deg,
+    rgba(30,28,27,.78) 0%,
+    rgba(17,16,16,.85) 55%,
+    rgba(23,21,20,.80) 100%);
+  /* Solo la propiedad estándar: Lightning CSS agrega el -webkit- en el build. */
+  backdrop-filter:blur(14px) saturate(120%);
+}
+
+/* Los ítems van MÁS oscuros que el recuadro que los contiene, para que se
+   lean como pastillas hundidas y no como tarjetas encima.
+   Versión anterior (blanco translúcido):
+.politica-item{
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  overflow:hidden;
+}
+.politica-item--abierta{
+  border-color:rgba(255,255,255,.18);
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.10) 0%,
+    rgba(255,255,255,.035) 52%,
+    rgba(255,255,255,.07) 100%);
+}
+*/
+.politica-item{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(10,10,11,.55);
+  overflow:hidden;
+}
+.politica-item--abierta{
+  border-color:rgba(255,255,255,.11);
+  background:rgba(10,10,11,.72);
+}
+
+.politica-item-cabecera{
+  display:flex;
+  /* center alinea insignia, título y chevron al medio vertical del cajón,
+     también cuando el título ocupa dos líneas. */
+  align-items:center;
+  gap:10px;
+  width:100%;
+  padding:14px;
+  border-radius:0;
+  background:transparent;
+  text-align:left;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+/* La regla genérica de base.css pinta el fondo dorado y aplica scale(.98):
+   hay que anular las dos en los tres estados. */
+.politica-item-cabecera:hover,
+.politica-item-cabecera:focus,
+.politica-item-cabecera:active{
+  outline:none;
+  transform:none;
+  background:transparent;
+}
+
+.politica-item button{
+  margin-top: 0;
+}
+
+.politica-item-insignia{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  border:1px solid rgba(237,111,45,.50);
+  /* Círculo oscuro con aro naranja, no relleno naranja. */
+  background:rgba(0,0,0,.45);
+  color:var(--brand-orange);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  line-height:1;
+}
+/* Preámbulo: punto dibujado con CSS, así queda perfectamente centrado. */
+.politica-item-insignia--punto::before{
+  content:'';
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--brand-orange);
+}
+
+.politica-item-titulo{
+  font-family: 'Montserrat';
+  flex:1;
+  min-width:0;
+  font-size:12px;
+  font-weight:700;
+  color:var(--paper);
+}
+
+/* Chevron desplegable. Arrow.svg apunta a la derecha en el archivo, así que
+   se rota: 90deg para abajo (cerrado) y -90deg para arriba (abierto). */
+.politica-item-chevron{
+  flex-shrink:0;
+  width:7px;
+  height:auto;
+  opacity:.5;
+  transform:rotate(90deg);
+  transition:transform .25s ease, opacity .25s ease;
+}
+.politica-item--abierta .politica-item-chevron{
+  opacity:.8;
+  transform:rotate(-90deg);
+}
+
+.politica-item-cuerpo{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:2px 14px 14px;
+}
+
+/* Texto legal: se lee seguido y largo, así que va con más interlineado que
+   el resto de la app. */
+.politica-parrafo{
+  margin:0;
+  font-size:11.5px;
+  line-height:1.65;
+  color:rgba(255,255,255,.80);
+  text-align:justify;
+}
+
+.politica-subtitulo{
+  margin:4px 0 0;
+  font-size:12px;
+  font-weight:700;
+  color:var(--brand-orange);
+}
+
+.politica-lista{
+  margin:0;
+  padding-left:16px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  font-size:11.5px;
+  line-height:1.6;
+  color:rgba(255,255,255,.80);
+}
+.politica-lista li::marker{color:var(--brand-orange);}
+.politica-lista-termino{
+  font-weight:700;
+  color:var(--paper);
+}
+
+.politica-volver-arriba{
+  align-self:flex-start;
+  margin-top:4px;
+  padding:7px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.72);
+  font-family:'Montserrat',sans-serif;
+  font-size:10.5px;
+  font-weight:400;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.politica-volver-arriba:hover,
+.politica-volver-arriba:focus,
+.politica-volver-arriba:active{
+  outline:none;
+  transform:none;
+  background:rgba(255,255,255,.11);
+  color:var(--paper);
+}
+
+.politica-enlace-oficial{
+  display:block;
+  margin-top:18px;
+  text-align:center;
+  font-size:11.5px;
+  color:var(--brand-orange);
+  text-decoration:underline;
+}
+
+/* ---- Perfil: acceso a la política de tratamiento de datos ---- */
+.perfil-politica{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.12) 0%,
+    rgba(255,255,255,.04) 52%,
+    rgba(255,255,255,.08) 100%);
+  /* Solo la propiedad estándar: Lightning CSS agrega el -webkit- en el build. */
+  backdrop-filter:blur(9px) saturate(150%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.24),
+    0 10px 24px rgba(0,0,0,.35);
+  text-align:left;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+/* Ahora es un <button>, así que le llega la regla genérica de base.css que
+   pinta el fondo dorado y aplica scale(.98): hay que anular las dos. */
+.perfil-politica:hover,
+.perfil-politica:focus,
+.perfil-politica:active{
+  outline:none;
+  transform:none;
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.16) 0%,
+    rgba(255,255,255,.06) 52%,
+    rgba(255,255,255,.10) 100%);
+}
+
+.perfil-politica-icono{
+  width:22px;
+  height:22px;
+  flex-shrink:0;
+}
+
+.perfil-politica-texto{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  flex:1;
+  min-width:0;
+}
+.perfil-politica-titulo{
+  font-size:13px;
+  color:var(--paper);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.perfil-politica-sub{
+  font-family: 'Montserrat';
+  font-weight: 100;
+  font-size:11px;
+  color:rgba(255,255,255,.65);
+}
+
+.perfil-politica-flecha{
+  width:7px;
+  height:auto;
+  flex-shrink:0;
+  opacity:.55;
+}
+
+/* Celulares angostos: Codi se encoge para no comerse el texto. */
+@media (max-width:360px){
+  .perfil-beneficios{min-height:200px;}
+  .perfil-beneficios-contenido{padding-right:112px;}
+  .perfil-beneficios-codi{width:185px;right:-32px;}
+  .perfil-beneficios-titulo{font-size:13px;}
+}
