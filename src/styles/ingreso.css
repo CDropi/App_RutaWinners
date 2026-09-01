@@ -1118,15 +1118,26 @@ h1{
   padding:10px;
   text-align:center;
   /* El vidrio: gradiente translúcido + desenfoque de lo que hay detrás.
-     El blur alto (18px) es lo que hace que el plano del mapa se vea
+     El blur alto (36px) es lo que hace que el plano del mapa se vea
      difuminado a través del popup. */
   border:1px solid rgba(255,255,255,.22);
   background:linear-gradient(150deg,
     rgba(255,255,255,.20) 0%,
     rgba(255,255,255,.06) 48%,
     rgba(255,255,255,.11) 100%);
+  /* IMPORTANTE: aquí va SOLO la propiedad estándar, sin la línea
+     -webkit-backdrop-filter escrita a mano.
+     Vite 8 minifica con Lightning CSS, que pone los prefijos por su
+     cuenta según los navegadores objetivo. Si encuentra el -webkit-
+     ya escrito, asume que el prefijado está resuelto y en el build
+     deja SOLO la línea -webkit-, borrando la estándar. En dev no se
+     nota (el dev server no minifica); en Vercel el popup salía sin
+     desenfoque. Dejando solo esta línea, el build emite las dos.
+     Versión anterior, por si se necesita revertir:
   backdrop-filter:blur(36px) saturate(150%);
   -webkit-backdrop-filter:blur(36px) saturate(150%);
+  */
+  backdrop-filter:blur(36px) saturate(150%);
   /* Los dos primeros inset son el brillo del borde superior y la
      sombra interna inferior: dan la sensación de grosor del vidrio.
      El tercero es la sombra que lo separa del mapa. */
