@@ -63,9 +63,19 @@ export const STANDS = [
     imagenMapaCompletado: "/media/Fondo_Mapa_Roax.png",
     logo: "/media/Logo_Roax.png",
     isotipo: "/media/Isotipo_Roax.png",
-    bienvenida: null, // mensaje de bienvenida personalizado de esta marca (cuando lo tengas)
-    mensajeExito: null, // mensaje que se muestra al desbloquear el logro de esta marca (cuando lo tengas)
+    bienvenida: "Escalar una campaña **sin datos** es como manejar con los ojos cerrados. En ROAX **somos el copiloto** que te dice cuándo escalar, ajustar o frenar, **antes de que pierdas plata.**\n\nPon a prueba tu criterio con 2 casos reales de **media buying y rentabilidad**, y obtén un beneficio exclusivo.",
+    mensajeExito: "1. **60 dias gratis** de Roax Pro.\n\n2. **Membresia** de Alertas con Ai.\n\n3. Informes **especializados.**\n\n4. Posibilidad de lanzar campañas con **creativos propios.**\n\n5. Acceso **prioritario** a crédito de Ads.",
     premio: { nombre: "Premio Roax", descripcion: "Descripción del premio de Roax (pendiente por definir)." },
+    preguntas: [
+      {
+        texto: "Entre el día 4 y 7 de tu campaña, tu anuncio tiene un CTR alto, pero CVR muy bajo en tu tienda. ¿Cuál es el diagnóstico correcto?",
+        opciones: ["El creativo se fatigó; Apaga el anuncio para no quemar presupuesto", "El anuncio funciona, pero la Landing Page o el precio están frenando la venta. Optimiza la web, no el creativo", "El anuncio es un ganador indiscutible; Duplica el presupuesto para que Meta fuerce las ventas"],
+      },
+      {
+        texto: "En fase de escalado (día 7+), Meta muestra CPA bajo y alto volumen de pedidos, pero la entrega en Dropi cayó por debajo del 75%. ¿Cuál es la decisión correcta?",
+        opciones: ["Aumentar el presupuesto; el CPA bajo y el volumen compensarán las devoluciones", "Frena el escalado y solo continúa si la efectividad supera el 80%", "Apagar la campaña y probar creativos más cortos para evitar devoluciones"],
+      },
+    ],
   },
   {
     id: "confio", nombre: "Confío Pagos", x: 71, y: 25.5, qrCode: "RUTA-CONFIO",
@@ -137,9 +147,20 @@ export const STANDS = [
     imagenMapaCompletado: "/media/Fondo_Mapa_Fenix.png",
     logo: "/media/Logo_Fenix.png",
     isotipo: "/media/Isotipo_Fenix.png",
-    bienvenida: null, // mensaje de bienvenida personalizado de esta marca (cuando lo tengas)
-    mensajeExito: null, // mensaje que se muestra al desbloquear el logro de esta marca (cuando lo tengas)
+    bienvenida: "Vender mucho y ganar dinero **no siempre** es lo mismo. En Fénix te ayudamos a pasar de **dropshipper a empresario**, con logística e infraestructura para operar en **toda Latam**.\n\nCuéntanos un poco sobre tu operación y descubre algo **especial** que preparamos para ti.",
+    mensajeExito: "*** CONSULTORÍA GRATUITA**\nSi tienes más de 10 ventas diarias.\n\n*** 20% DESCUENTO**\nen implementación de Chatea Pro si tienes entre 1-10 ventas diarias.\n\n*** Academia 15 días gratis** / Lexi\nSi aún no vendes.",
     premio: { nombre: "Premio Fénix", descripcion: "Descripción del premio de Fénix (pendiente por definir)." },
+    preguntas: [
+      {
+        texto: "¿Cuántas ventas en tu tienda virtual de productos (dropshipping o marca propia) tienes al día?",
+        opciones: ["Aún no vendo de esa forma", "1-10 ventas diarias", "11-50 ventas diarias", "Más de 50 ventas diarias"],
+      },
+      {
+        texto: "¿En qué país(es) vendes?",
+        opciones: ["Colombia", "Ecuador", "Chile", "México", "Panamá", "Guatemala", "Paraguay", "Argentina", "Perú", "Aún no vendo"],
+        multiple: true, // permite marcar más de una opción (puede vender en varios países)
+      },
+    ],
   },
   {
     id: "dropipay", nombre: "DropiPay", x: 84.8, y: 60, qrCode: "RUTA-DROPIPAY",
@@ -148,9 +169,19 @@ export const STANDS = [
     imagenMapaCompletado: "/media/Fondo_Mapa_DropiPay.png",
     logo: "/media/Logo_DropiPay.png",
     isotipo: "/media/Isotipo_DropiPay.png",
-    bienvenida: null, // mensaje de bienvenida personalizado de esta marca (cuando lo tengas)
+    bienvenida: "En dropiPay importas, pagas y accedes a crédito sin drama, **sin bancos y sin fronteras.**\n\nCuéntanos qué tanto conoces de **nuestra plataforma** y descubre algo que preparamos para ti.",
     mensajeExito: null, // mensaje que se muestra al desbloquear el logro de esta marca (cuando lo tengas)
     premio: { nombre: "Premio PAU", descripcion: "Descripción del premio de PAU (pendiente por definir)." },
+    preguntas: [
+      {
+        texto: "¿Tiene costo generar una PayCard en dropiPay?",
+        opciones: ["Si", "No"],
+      },
+      {
+        texto: "¿Cuál es el costo por retirar COP a USDT en dropiPay?",
+        opciones: ["5 USDT por transacción, sin importar el monto", "4.5% por el valor transado", "3 USDT por transacción, sin importar el monto"],
+      },
+    ],
   }, 
   {
     id: "groupack", nombre: "Groupack", x: 49, y: 66, qrCode: "RUTA-GROUPACK",

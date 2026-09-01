@@ -778,17 +778,33 @@ function MapaView({ onIniciar, standsCompletados, premios, onAbrirPremios, onSim
 function ActividadStand({ stand, persona, completado, standsCompletados, onCompletar, onRegresar }) {
   const preguntas = stand.preguntas || PREGUNTAS_EJEMPLO;
   const [paso, setPaso] = useState(completado ? 'yaCompletado' : 'portada');
-  const [seleccionada, setSeleccionada] = useState(null); // índice de la opción marcada en la pregunta actual
+  const [seleccionada, setSeleccionada] = useState(null); // índice de la opción marcada (preguntas de selección única)
+  const [seleccionMultiple, setSeleccionMultiple] = useState([]); // índices marcados (preguntas de selección múltiple, ej. países de Fénix)
   const [errorQR, setErrorQR] = useState('');
+
+  // Pregunta actual (solo tiene sentido cuando paso es un número, es decir,
+  // cuando estamos en el flujo de preguntas y no en portada/scanner/éxito).
+  const preguntaActual = typeof paso === 'number' ? preguntas[paso] : null;
+  const esMultiple = !!preguntaActual?.multiple;
+  const haySeleccion = esMultiple ? seleccionMultiple.length > 0 : seleccionada !== null;
 
   function comenzar() { setPaso(0); }
 
   function siguientePregunta() {
-    if (seleccionada === null) return;
+    if (!haySeleccion) return;
     setSeleccionada(null);
+    setSeleccionMultiple([]);
     setErrorQR('');
     if (paso + 1 < preguntas.length) setPaso(paso + 1);
     else setPaso('scanner');
+  }
+
+  function alternarOpcion(i) {
+    if (esMultiple) {
+      setSeleccionMultiple((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]));
+    } else {
+      setSeleccionada(i);
+    }
   }
 
   // Enciende la cámara solo mientras estamos en el paso del scanner, y la
@@ -981,24 +997,27 @@ function ActividadStand({ stand, persona, completado, standsCompletados, onCompl
               </h3>
               <p className="actividad-pregunta-enunciado">{preguntas[paso].texto}</p>
               <div className="actividad-opciones">
-                {preguntas[paso].opciones.map((opcion, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={`actividad-opcion ${seleccionada === i ? 'marcada' : ''}`}
-                    onClick={() => setSeleccionada(i)}
-                  >
-                    <span className="actividad-opcion-letra">{String.fromCharCode(65 + i)}</span>
-                    <span className="actividad-opcion-texto">{opcion}</span>
-                    <span className="actividad-opcion-radio" />
-                  </button>
-                ))}
+                {preguntas[paso].opciones.map((opcion, i) => {
+                  const marcada = esMultiple ? seleccionMultiple.includes(i) : seleccionada === i;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`actividad-opcion ${marcada ? 'marcada' : ''}`}
+                      onClick={() => alternarOpcion(i)}
+                    >
+                      <span className="actividad-opcion-letra">{String.fromCharCode(65 + i)}</span>
+                      <span className="actividad-opcion-texto">{opcion}</span>
+                      <span className="actividad-opcion-radio" />
+                    </button>
+                  );
+                })}
               </div>
               <button
                 type="button"
                 className={`actividad-siguiente-btn ${paso + 1 === preguntas.length ? 'final' : ''}`}
                 onClick={siguientePregunta}
-                disabled={seleccionada === null}
+                disabled={!haySeleccion}
               >
                 {paso + 1 === preguntas.length ? 'Enviar respuestas' : 'Siguiente'}
               </button>
