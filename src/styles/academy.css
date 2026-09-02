@@ -1,0 +1,116 @@
+/* ============================================================
+   academy.css — mini experiencia de Academy.
+   ============================================================ */
+
+
+/* Ocupa toda la pantalla (va dentro de .app-scroll--full, sin nav abajo) y
+   reparte el contenido en columna: badge arriba, texto, Codi y botón. */
+.academy-view{
+  position:relative;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:40px 24px;
+  overflow:hidden;
+}
+
+/* Fondo propio de la pantalla. Tres capas en un solo background:
+   1) el damero tenue (conic-gradient repetido en cuadros de 104px),
+   2) la forma redondeada clara de abajo (radial recortado),
+   3) el naranja plano de base.
+   Va en su propia capa (no en el body) para que salir de la pantalla no
+   tenga que restaurar nada. */
+.academy-fondo{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background-color:#F44F0D;
+  /* El damero es a propósito casi imperceptible: en el diseño apenas se
+     insinúa. Con más opacidad o cuadros más grandes competía con el Codi.
+     Versión anterior (demasiado marcada): rgba(255,255,255,.045) y 104px. */
+  background-image:
+    conic-gradient(from 0deg at 50% 50%,
+      rgba(255,255,255,.022) 0 25%,
+      transparent 0 50%,
+      rgba(255,255,255,.022) 0 75%,
+      transparent 0);
+  background-size:68px 68px;
+  background-position:center bottom;
+}
+.academy-badge{
+  position:relative;
+  z-index:1;
+  margin-top:40px;
+}
+.academy-badge img{
+  display:block;
+  width:76px;
+  height:auto;
+}
+.academy-badge-texto{
+  display:block;
+  padding:14px 20px 16px;
+  border-radius:0 0 18px 18px;
+  background:#fff;
+  color:#F44F0D;
+  font-family:'Tusker',sans-serif;
+  font-size:16px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+.academy-texto{
+  position:relative;
+  z-index:1;
+  margin:34px 0 0;
+  max-width:280px;
+  text-align:center;
+  font-family:'Montserrat';
+  font-weight:100;
+  font-size:13.5px;
+  color:#fff;
+}
+.academy-texto strong{font-weight:700;}
+
+/* El Codi se queda en el centro del espacio libre: margin auto arriba y
+   abajo lo empuja al medio, y el botón queda abajo. */
+.academy-codi{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:auto;
+  max-width:100%;
+  max-height:46vh;
+  object-fit:contain;
+  margin:auto 0;
+}
+
+/* Píldora oscura del diseño. Se redeclara todo en los tres estados por las
+   reglas genéricas de button de base.css (fondo dorado y scale). */
+.academy-btn{
+  position:relative;
+  z-index:1;
+  flex-shrink:0;
+  padding:13px 34px;
+  border-radius:999px;
+  border:none;
+  background:#242424;
+  color:#fff;
+  font-family:'Montserrat',sans-serif;
+  font-weight:700;
+  font-size:13.5px;
+  letter-spacing:.02em;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:0 8px 22px rgba(0,0,0,.28);
+}
+.academy-btn:hover,
+.academy-btn:focus,
+.academy-btn:active{
+  outline:none;
+  transform:none;
+  background:#2f2f2f;
+  color:#fff;
+}
+
