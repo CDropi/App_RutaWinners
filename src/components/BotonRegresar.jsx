@@ -8,7 +8,15 @@ import '../styles/componentes.css';
 // stand y Academy) el botón va absoluto sobre el contenido, respetando el
 // notch. En las que scrollean dentro de .app-scroll (política y premios) va
 // en el flujo normal, porque un botón fijo taparía el encabezado.
-export default function BotonRegresar({ onClick, flotante = false, etiqueta = 'Regresar' }) {
+// `icono`: por defecto la flecha de "atrás". Academy pasa la casa, porque
+// desde sus pantallas el botón no devuelve un paso sino que sale de la mini
+// experiencia y vuelve a la Ruta Winner.
+export default function BotonRegresar({
+  onClick,
+  flotante = false,
+  etiqueta = 'Regresar',
+  icono = '/media/Atras.svg',
+}) {
   return (
     <button
       type="button"
@@ -16,7 +24,10 @@ export default function BotonRegresar({ onClick, flotante = false, etiqueta = 'R
       onClick={onClick}
       aria-label={etiqueta}
     >
+      {/* Versión anterior (icono fijo):
       <img src="/media/Atras.svg" alt="" />
+      */}
+      <img src={icono} alt="" />
     </button>
   );
 }

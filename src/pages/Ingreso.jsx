@@ -144,12 +144,12 @@ export default function Ingreso() {
     setPremios(actualizado);
   }
 
-  // PENDIENTE: qué pasa al tocar "Empezar misión". Por ahora no hace nada,
-  // para que la pantalla se pueda ver y probar mientras se define el
-  // contenido de la mini experiencia.
-  function manejarEmpezarMision() {
-    // Aquí irá el arranque de la misión.
-  }
+  // "Empezar misión" ahora lo maneja AcademyView por dentro (pasa de la
+  // pantalla de bienvenida a la del camino), así que este handler ya no se
+  // usa. Se deja comentado por si vuelve a hacer falta desde afuera:
+  // function manejarEmpezarMision() {
+  //   // Aquí irá el arranque de la misión.
+  // }
 
   // ---- SOLO MODO_PRUEBA: para poder ver el flujo de premios completo sin
   // tener que escanear los 7 QR reales uno por uno. No toca Firebase; en
@@ -283,10 +283,16 @@ export default function Ingreso() {
         {persona && !standActivo && academyAbierto && (
           <div className="app-shell">
             <div className="app-scroll app-scroll--full">
+              {/* AcademyView maneja por dentro cuál de sus pantallas se ve
+                  (bienvenida, camino, ...). Desde aquí solo se le dice cómo
+                  salir de la mini experiencia y volver al mapa.
+                  Versión anterior, cuando Academy era una sola pantalla:
               <AcademyView
                 onRegresar={() => setAcademyAbierto(false)}
                 onEmpezar={manejarEmpezarMision}
               />
+              */}
+              <AcademyView onSalir={() => setAcademyAbierto(false)} />
             </div>
           </div>
         )}

@@ -231,18 +231,17 @@ export const PUNTO_ACADEMY = {
   descripcion: "Una mini experiencia para poner a prueba lo aprendido.",
   textoBoton: "Entrar",
 
-  // Pantalla de bienvenida de la mini experiencia. Se abre DENTRO de la app
-  // (no es un enlace externo), desde el botón del popup del mapa.
-  intro: {
-    // Acepta **negrillas** y \n para saltos de línea, igual que el resto de
-    // los textos de config.js.
-    texto: "Hoy no vas a ver una clase,\nvas a completar una **misión.**",
-    // PENDIENTE: reemplazar por el PNG del Codi sentado con destellos que
-    // entregue diseño. Mientras tanto se usa el Codi que ya está en el
-    // proyecto para no dejar el hueco.
-    imagen: "/media/Codi_Academy_Sentado.png",
-    textoBoton: "Empezar misión",
-  },
+  // El contenido de las PANTALLAS de Academy (bienvenida, camino de
+  // estaciones, etc.) ya no vive aquí: son varias pantallas con bastante
+  // texto y se movió todo a src/data/academyDatos.js. Aquí queda solo lo que
+  // necesita el punto del mapa.
+  //
+  // Versión anterior (movida a academyDatos.js -> ACADEMY.intro):
+  // intro: {
+  //   texto: "Hoy no vas a ver una clase,\nvas a completar una **misión.**",
+  //   imagen: "/media/Codi_Academy_Sentado.png",
+  //   textoBoton: "Empezar misión",
+  // },
 };
 
 export const PREGUNTAS_EJEMPLO = [

@@ -107,7 +107,14 @@
    respiro final ya lo pone el propio panel, y si se dejara quedaría una
    franja del fondo por debajo del color sólido.
    Los dos flex de abajo son los que permiten que el panel se estire. */
+/* Va con las dos clases juntas por especificidad: premios.css se carga ANTES
+   de ingreso.css (Ingreso.jsx importa las vistas antes que su hoja de
+   estilos), así que con una sola clase ganaba .app-scroll{padding:28px 18px 85px}
+   y quedaban 85px de fondo por debajo del panel oscuro al llegar al final.
+   Versión anterior (no funcionaba en el build):
 .app-scroll--premios{padding-bottom:0;}
+*/
+.app-scroll.app-scroll--premios{padding-bottom:0;}
 .app-scroll--premios > .premios-view{
   flex:1;
   display:flex;

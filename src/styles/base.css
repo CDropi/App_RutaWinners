@@ -105,31 +105,50 @@ button:disabled{opacity:.5;cursor:default;}
 }
 
 /* ---- Pantalla de bloqueo: solo se puede usar desde celular ---- */
+/* Esta pantalla se salía de la ventana (y por eso aparecía scroll) porque el
+   Codi podía llegar a 700px de alto y el título a 70px sin ningún tope
+   relativo al viewport, y además no tenía padding: en ventanas menos altas
+   que ~1000px el contenido no cabía.
+   Versión anterior: gap:100px y sin padding. */
+/* Alto exacto y overflow:hidden en vez de min-height: esta pantalla es un
+   cierre informativo (no hay nada que leer más abajo), así que en ventanas
+   bajas es mejor que recorte que que aparezca scroll. Con min-height cualquier
+   par de píxeles de sobra activaba la barra, sobre todo porque html/body
+   llevan overflow-x:hidden y eso vuelve el eje vertical "auto".
+   Versión anterior: min-height:100vh / 100dvh sin overflow. */
 .solo-mobil{
-  min-height:100vh;
-  min-height:100dvh;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-  gap: 100px;
+  gap:clamp(32px, 6vw, 100px);
+  padding:40px clamp(20px, 4vw, 60px);
 }
 
+/* Versión anterior: width:300px fijo. */
 .solo-mobil-img {
-  width: 300px;
+  width: clamp(180px, 20vw, 300px);
 }
 
+/* Versión anterior: width:30% y padding:0 50px (el padding de la pantalla ya
+   da el margen contra el borde). */
 .solo-mobil-info {
-  width: 30%;
-  padding: 0 50px;
+  width: 100%;
+  max-width: 520px;
 }
 
+/* El tamaño se adapta a la ventana en vez de quedar fijo en 70px/85px, que
+   es lo que forzaba el alto.
+   Versión anterior: font-size:70px; margin:0 0 50px; line-height:85px; */
 .solo-mobil-title{
   font-family:'Tusker',sans-serif;
   font-weight:700;
-  font-size:70px;
-  margin:0 0 50px;
-  line-height: 85px;
+  font-size:clamp(38px, 4.4vw, 70px);
+  margin:0 0 clamp(24px, 3vw, 50px);
+  line-height:1.2;
 }
 
 .solo-mobil-text{
@@ -144,10 +163,15 @@ button:disabled{opacity:.5;cursor:default;}
   position:relative;
   display:inline-block;
 }
+/* max-height contra el viewport: es lo que evita que el Codi empuje la
+   pantalla más allá de la ventana.
+   Versión anterior: max-width:700px sin tope de alto. */
 .solo-mobil-icon img{
   position:relative;
   z-index:1;
-  max-width:700px;
+  width:auto;
+  max-width:min(700px, 45vw);
+  max-height:80vh;
   display:block;
 }
 

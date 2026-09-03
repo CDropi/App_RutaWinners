@@ -3,7 +3,20 @@
    popups, botón de premios y panel de progreso (trofeo).
    ============================================================ */
 
+/* Perfil: pantalla fija, sin scroll.
+   OJO con la especificidad: mapa.css se carga ANTES de ingreso.css (porque
+   Ingreso.jsx importa las vistas antes que su hoja de estilos), así que la
+   versión anterior de una sola clase perdía contra .app-scroll{overflow-y:auto}
+   de ingreso.css y el Perfil seguía haciendo scroll. Con las dos clases
+   juntas gana esta regla sin importar el orden de carga.
+   Versión anterior (no funcionaba en el build):
 .app-scroll--sin-scroll{overflow-y:hidden;}
+*/
+/* overflow completo (no solo overflow-y): con overflow-y:hidden y overflow-x
+   por defecto, el navegador convierte el eje horizontal en "auto" y en iOS
+   eso deja el rebote vertical. Con overflow:hidden no hay arrastre de
+   ningún tipo. */
+.app-scroll.app-scroll--sin-scroll{overflow:hidden;}
 
 .mapa-view{
   width:100%;
