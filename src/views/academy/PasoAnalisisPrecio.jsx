@@ -43,8 +43,16 @@ export default function PasoAnalisisPrecio({ paso, producto, costos, precio, onC
     else textoCompetencia = paso.textoIgual;
   }
 
+  // El personaje lo dibuja esta pantalla y no el contenedor, porque depende
+  // de la zona: el contenedor solo sabe pintar un `paso.imagen` fijo.
+  const personaje = paso.personajePorZona?.[zonaId];
+
   return (
     <>
+      {personaje && (
+        <img className="academy-mision-codi" src={personaje} alt="" />
+      )}
+
       {/* Tarjeta del veredicto. El color lo pone el rango donde cayó el
           precio (verde si es rentable, rojo si es pérdida, etc.). */}
       <section className={`academy-analisis-tarjeta academy-analisis-tarjeta--${zonaId}`}>

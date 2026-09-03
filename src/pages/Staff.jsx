@@ -3,7 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { MODO_PRUEBA, IMAGEN_FONDO_LOGIN, LOGO_LOGIN, EVENTO, STANDS } from '../config.js';
 import {
   procesarCheckin, obtenerContadoresPorDia, obtenerAsistentesIngresados,
-  buscarPersonaConPremios, marcarPremioEntregado
+  buscarPersonaConPremios
 } from '../lib/dataLayer.js';
 import { useEsMobil } from '../hooks/useEsMobil.js';
 import SoloMobil from '../components/SoloMobil.jsx';
@@ -229,16 +229,8 @@ function ScannerView({ usuario, onLogout }) {
     }
   }
 
-  async function entregarPremio(premioId) {
-    if (!premiosResultado) return;
-    try {
-      const actualizado = await marcarPremioEntregado(premiosResultado.persona.id, premioId);
-      setPremiosResultado(prev => ({ ...prev, premios: actualizado }));
-    } catch (err) {
-      console.error(err);
-      setPremiosError('No se pudo marcar como entregado. Intenta de nuevo.');
-    }
-  }
+  // El staff ya no entrega premios: esta vista es solo de consulta. Se quitó
+  // entregarPremio() junto con marcarPremioEntregado() del dataLayer.
 
   function cerrarVistaPremios() {
     setVistaPremios(false);
@@ -572,6 +564,10 @@ function ScannerView({ usuario, onLogout }) {
                   <span className="staff-premios-persona-progreso">
                     {premiosResultado.standsCompletados.length} de {STANDS.length} stands
                   </span>
+                  {/* Academy no es un stand, así que va como su propio dato. */}
+                  <span className="staff-premios-persona-progreso">
+                    Academy: {premiosResultado.academyCompletada ? 'completada ✓' : 'sin completar'}
+                  </span>
                 </div>
 
                 {!premiosResultado.premios.confirmado && (
@@ -582,24 +578,13 @@ function ScannerView({ usuario, onLogout }) {
 
                 {premiosResultado.premios.confirmado && STANDS
                   .filter(stand => premiosResultado.premios.seleccionados.includes(stand.id))
-                  .map(stand => {
-                    const entregado = premiosResultado.premios.entregados?.includes(stand.id);
-                    return (
-                      <div key={stand.id} className="staff-detalle-item">
-                        <div className="staff-detalle-row-top">
-                          <span className="staff-detalle-nombre">{stand.premio.nombre}</span>
-                        </div>
-                        <button
-                          type="button"
-                          className={`staff-premio-entregar-btn ${entregado ? 'hecho' : ''}`}
-                          onClick={() => entregarPremio(stand.id)}
-                          disabled={entregado}
-                        >
-                          {entregado ? '✓ Entregado' : 'Marcar como entregado'}
-                        </button>
+                  .map(stand => (
+                    <div key={stand.id} className="staff-detalle-item">
+                      <div className="staff-detalle-row-top">
+                        <span className="staff-detalle-nombre">{stand.premio.nombre}</span>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
               </div>
             )}
           </div>

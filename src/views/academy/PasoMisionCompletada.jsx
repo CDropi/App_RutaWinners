@@ -29,9 +29,12 @@ export default function PasoMisionCompletada({ paso, onContinuar }) {
           </span>
         </div>
 
-        {/* PENDIENTE: la referencia no muestra botón. Si hace falta uno para
-            volver a la Ruta Winner, se agrega `textoBoton` en academyDatos.js
-            y aparece acá. */}
+        {paso.mensaje && (
+          <p className="academy-final-mensaje">{conNegrillas(paso.mensaje)}</p>
+        )}
+
+        {/* La referencia no muestra botón. Si hiciera falta uno, se agrega
+            `textoBoton` en academyDatos.js y aparece acá. */}
         {paso.textoBoton && (
           <button type="button" className="academy-final-btn" onClick={onContinuar}>
             {paso.textoBoton}

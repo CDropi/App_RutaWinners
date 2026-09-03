@@ -49,7 +49,8 @@ const LS_PERSONAS = "mock_personas_v2";
 const LS_TICKETS = "mock_tickets_v2";
 const LS_STATS = "mock_stats_v2";
 const LS_PROGRESO = "mock_stand_progreso_v1"; // { [personId]: [standId, standId, ...] }
-const LS_PREMIOS = "mock_premios_v1"; // { [personId]: { seleccionados:[], confirmado:false, entregados:[] } }
+const LS_ACADEMY = "mock_academy_v1"; // { [personId]: true }
+const LS_PREMIOS = "mock_premios_v1"; // { [personId]: { seleccionados:[], confirmado:false } }
 
 let _db = null;
 function getDb() {
@@ -90,12 +91,21 @@ function leerProgreso() {
 }
 function guardarProgreso(p) { localStorage.setItem(LS_PROGRESO, JSON.stringify(p)); }
 
+function leerAcademy() {
+  const raw = localStorage.getItem(LS_ACADEMY);
+  return raw ? JSON.parse(raw) : {};
+}
+function guardarAcademy(a) { localStorage.setItem(LS_ACADEMY, JSON.stringify(a)); }
+
 function leerPremios() {
   const raw = localStorage.getItem(LS_PREMIOS);
   return raw ? JSON.parse(raw) : {};
 }
 function guardarPremios(p) { localStorage.setItem(LS_PREMIOS, JSON.stringify(p)); }
-function premiosVacio() { return { seleccionados: [], confirmado: false, entregados: [] }; }
+// El staff ya no entrega premios (solo consulta), así que se quitó el campo
+// `entregados`. Versión anterior:
+// function premiosVacio() { return { seleccionados: [], confirmado: false, entregados: [] }; }
+function premiosVacio() { return { seleccionados: [], confirmado: false }; }
 
 function generarCodigo(usados) {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // sin 0,O,1,I,L
@@ -320,11 +330,12 @@ export function reiniciarDatosDePrueba() {
   localStorage.removeItem(LS_TICKETS);
   localStorage.removeItem(LS_STATS);
   localStorage.removeItem(LS_PROGRESO);
+  localStorage.removeItem(LS_ACADEMY);
   localStorage.removeItem(LS_PREMIOS);
 }
 
 // ---- Premios de la Ruta Winner ----
-// Devuelve { seleccionados, confirmado, entregados } para esta persona.
+// Devuelve { seleccionados, confirmado } para esta persona.
 // Si nunca ha tocado nada de premios, devuelve el estado vacío por defecto.
 export async function obtenerPremiosPersona(personId) {
   if (MODO_PRUEBA) {
@@ -352,52 +363,82 @@ export async function confirmarPremios(personId, premiosIds) {
   const ref = doc(getDb(), "premios", personId);
   const actual = await obtenerPremiosPersona(personId);
   if (actual.confirmado) return actual; // ya estaba confirmada: no se toca
-  const nuevo = { seleccionados: premiosIds, confirmado: true, entregados: actual.entregados || [] };
+  const nuevo = { seleccionados: premiosIds, confirmado: true };
   await setDoc(ref, nuevo, { merge: true });
   return nuevo;
 }
 
-// Uso del STAFF: marca un premio puntual como entregado físicamente.
-export async function marcarPremioEntregado(personId, premioId) {
-  if (MODO_PRUEBA) {
-    await delay(150);
-    const todos = leerPremios();
-    const actual = todos[personId] || premiosVacio();
-    if (!actual.entregados.includes(premioId)) {
-      todos[personId] = { ...actual, entregados: [...actual.entregados, premioId] };
-      guardarPremios(todos);
-    }
-    return todos[personId];
-  }
-  const ref = doc(getDb(), "premios", personId);
-  await setDoc(ref, { entregados: arrayUnion(premioId) }, { merge: true });
-  const snap = await getDoc(ref);
-  return { ...premiosVacio(), ...snap.data() };
-}
+// El staff ya no marca premios como entregados: su vista es solo de consulta.
+// Se quitó marcarPremioEntregado() junto con el campo `entregados`. Si algún
+// día hay que volver a registrar la entrega, la función estaba así:
+//
+// export async function marcarPremioEntregado(personId, premioId) {
+//   const ref = doc(getDb(), "premios", personId);
+//   await setDoc(ref, { entregados: arrayUnion(premioId) }, { merge: true });
+//   const snap = await getDoc(ref);
+//   return { ...premiosVacio(), ...snap.data() };
+// }
 
 // Uso del STAFF: trae en un solo llamado todo lo que necesita la vista de
 // entrega de premios para una persona (datos básicos + progreso + premios).
 export async function buscarPersonaConPremios(idValue) {
   const persona = await buscarPersonaPorId(idValue);
   if (!persona) return null;
-  const [standsCompletados, premios] = await Promise.all([
-    obtenerStandsCompletados(idValue),
+  // Una sola lectura de standProgress trae los stands y el estado de
+  // Academy, que el staff también necesita ver.
+  const [progreso, premios] = await Promise.all([
+    obtenerProgresoRuta(idValue),
     obtenerPremiosPersona(idValue),
   ]);
-  return { persona, standsCompletados, premios };
+  return {
+    persona,
+    standsCompletados: progreso.completados,
+    academyCompletada: progreso.academy,
+    premios,
+  };
 }
 
 // ---- Progreso de la "Ruta Winner" (actividad por stand) ----
 // Devuelve la lista de ids de stands que esta persona ya completó
 // (escaneó el QR correcto tras responder las preguntas).
 export async function obtenerStandsCompletados(personId) {
+  return (await obtenerProgresoRuta(personId)).completados;
+}
+
+// Trae de una sola lectura TODO el progreso de la ruta: los stands
+// completados y si ya terminó la actividad de Academy.
+//
+// Van en el MISMO documento (standProgress/{personId}) justamente para no
+// gastar una lectura extra por persona: con ~5.000 asistentes, cada lectura
+// evitable cuenta. De Academy solo interesa el sí/no, no en qué paso quedó.
+export async function obtenerProgresoRuta(personId) {
   if (MODO_PRUEBA) {
     await delay(150);
-    const progreso = leerProgreso();
-    return progreso[personId] || [];
+    return {
+      completados: leerProgreso()[personId] || [],
+      academy: leerAcademy()[personId] === true,
+    };
   }
   const snap = await getDoc(doc(getDb(), "standProgress", personId));
-  return snap.exists() ? (snap.data().completados || []) : [];
+  const datos = snap.exists() ? snap.data() : {};
+  return {
+    completados: datos.completados || [],
+    academy: datos.academy === true,
+  };
+}
+
+// Deja registrado que esta persona ya completó la actividad de Academy.
+// Es idempotente: volver a llamarla no cambia nada.
+export async function marcarAcademyCompletada(personId) {
+  if (MODO_PRUEBA) {
+    await delay(150);
+    const academy = leerAcademy();
+    academy[personId] = true;
+    guardarAcademy(academy);
+    return true;
+  }
+  await setDoc(doc(getDb(), "standProgress", personId), { academy: true }, { merge: true });
+  return true;
 }
 
 // Marca un stand como completado para esta persona (no truena si ya

@@ -3,7 +3,7 @@ import { MODO_PRUEBA, LOGO_APP, IMAGEN_MAPA_PLANO, STANDS, PUNTO_ACADEMY } from 
 import { textoSobre } from '../../utils/color.js';
 import '../../styles/mapa.css';
 
-export default function MapaView({ onIniciar, standsCompletados, premios, onAbrirPremios, onAbrirAcademy, onSimularCompletarTodos, onSimularReiniciar }) {
+export default function MapaView({ onIniciar, standsCompletados, premios, onAbrirPremios, onAbrirAcademy, onSimularCompletarTodos, onSimularReiniciar, academyCompletada = false }) {
   const [pinAbierto, setPinAbierto] = useState(null); // id del stand con el tooltip abierto, o null
   const [trofeoAbierto, setTrofeoAbierto] = useState(false);
 
@@ -183,7 +183,7 @@ export default function MapaView({ onIniciar, standsCompletados, premios, onAbri
               cierre al tocar fuera lo siga reconociendo sin tocar nada. */}
           <button
             type="button"
-            className={`mapa-pin mapa-pin--academy ${academyAbierto ? 'active' : ''}`}
+            className={`mapa-pin mapa-pin--academy ${academyAbierto ? 'active' : ''} ${academyCompletada ? 'done' : ''}`}
             style={{ left: `${PUNTO_ACADEMY.x}%`, top: `${PUNTO_ACADEMY.y}%` }}
             onClick={() => setPinAbierto(actual => (actual === PUNTO_ACADEMY.id ? null : PUNTO_ACADEMY.id))}
             aria-label={PUNTO_ACADEMY.nombre}
@@ -210,12 +210,15 @@ export default function MapaView({ onIniciar, standsCompletados, premios, onAbri
                 <p className="mapa-tooltip-desc">{PUNTO_ACADEMY.descripcion}</p>
               )}
 
+              {/* Igual que en los stands: una vez completada, el botón lo
+                  dice, pero sigue abriendo la experiencia (cae en la pantalla
+                  final). */}
               <button
                 type="button"
                 className="mapa-tooltip-btn mapa-tooltip-btn--academy"
                 onClick={onAbrirAcademy}
               >
-                {PUNTO_ACADEMY.textoBoton}
+                {academyCompletada ? 'Completado ✓' : PUNTO_ACADEMY.textoBoton}
               </button>
             </div>
           )}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BotonRegresar from '../../components/BotonRegresar.jsx';
 import PasoSeleccionProducto from './PasoSeleccionProducto.jsx';
 import PasoDefinirPrecio from './PasoDefinirPrecio.jsx';
@@ -24,8 +24,12 @@ import '../../styles/academyMision.css';
 // `onVolver` regresa al camino de estaciones sin terminar la misión.
 // `onTerminar` la marca como completada y también regresa al camino.
 // `onSalir` cierra Academy y vuelve al mapa de la Ruta Winner.
-export default function AcademyMision({ logo, logoNaranja, nombre, estacion, onVolver, onTerminar, onSalir }) {
-  const [indice, setIndice] = useState(0);
+export default function AcademyMision({
+  logo, logoNaranja, nombre, estacion,
+  onVolver, onTerminar, onSalir, onCompletar,
+  indiceInicial = 0,
+}) {
+  const [indice, setIndice] = useState(indiceInicial);
 
   // Lo que va respondiendo la persona a lo largo de la misión (por ejemplo el
   // producto que eligió). Se guarda acá porque los pasos siguientes lo
@@ -35,6 +39,15 @@ export default function AcademyMision({ logo, logoNaranja, nombre, estacion, onV
 
   const pasos = estacion.pasos || [];
   const paso = pasos[indice];
+
+  // El paso marcado con `marcaCompletado` es el cierre de la experiencia: al
+  // llegar ahí se avisa hacia arriba para que quede el registro. Se dispara
+  // al mostrarse la pantalla y no con un botón porque esa pantalla no tiene
+  // botón; si se vuelve a entrar ya completada, el aviso es inofensivo
+  // (arriba se ignora si ya estaba marcada).
+  useEffect(() => {
+    if (paso?.marcaCompletado) onCompletar?.();
+  }, [paso?.id]);
 
   // La flecha devuelve UNA pantalla: si hay un paso antes en la misión va a
   // ese, y solo cuando ya se está en el primero sale al camino de estaciones.
@@ -106,7 +119,11 @@ export default function AcademyMision({ logo, logoNaranja, nombre, estacion, onV
             anterior de la misión, o el camino si ya se está en el primero) y
             la casa sale de Academy hacia el mapa de la Ruta Winner. */}
         <div className="academy-mision-acciones">
-          <BotonRegresar onClick={atras} etiqueta="Volver a la pantalla anterior" />
+          {/* Los pasos de cierre traen `sinAtras`: no tiene sentido devolverse
+              a rehacer la actividad ya terminada, así que queda solo la casa. */}
+          {!paso.sinAtras && (
+            <BotonRegresar onClick={atras} etiqueta="Volver a la pantalla anterior" />
+          )}
           <BotonRegresar
             onClick={onSalir}
             icono="/media/Casa.svg"

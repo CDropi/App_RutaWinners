@@ -672,32 +672,7 @@ body{
   color:var(--brand-orange,#ED6F2D);
   font-weight:700;
 }
-.staff-premio-entregar-btn{
-  width:100%;
-  margin-top:8px;
-  padding:9px 0;
-  border-radius:10px;
-  border:1px solid rgba(237,111,45,.4);
-  background:rgba(237,111,45,.12);
-  color:var(--brand-orange,#ED6F2D);
-  font-family:'Montserrat',sans-serif;
-  font-weight:700;
-  font-size:12px;
-  letter-spacing:.03em;
-  text-transform:uppercase;
-  cursor:pointer;
-}
-.staff-premio-entregar-btn:hover,
-.staff-premio-entregar-btn:focus,
-.staff-premio-entregar-btn:active{
-  background:rgba(237,111,45,.2);
-  outline:none;
-  transform:none;
-}
-.staff-premio-entregar-btn.hecho{
-  background:rgba(34,197,94,.12);
-  border-color:rgba(34,197,94,.4);
-  color:#22c55e;
-  cursor:default;
-}
-.staff-premio-entregar-btn:disabled{opacity:1;}
+/* El botón de "marcar como entregado" se eliminó: el staff ya no registra
+   entregas de premios, su vista es solo de consulta. Si algún día vuelve, las
+   reglas estaban en el historial de este archivo (clases
+   .staff-premio-entregar-btn y su variante .hecho). */

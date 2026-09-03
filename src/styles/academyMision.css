@@ -175,7 +175,7 @@
   /* Deja el carril del ancho completo menos lo que ocupa la medalla, que va
      montada sobre su extremo derecho. */
   padding-right:26px;
-  margin:9px 0 28px;
+  margin:9px 0 18px;
 }
 .academy-mision-progreso-carril{
   flex:1;
@@ -359,7 +359,7 @@
   flex-shrink:0;
   width:100%;
   max-width:420px;
-  margin:16px 0 0;
+  margin:12px 0 0;
   text-align:center;
 }
 .academy-mision-cabezote-titulo{
@@ -383,7 +383,10 @@
    sola y centrada. */
 .academy-mision-producto-elegido{
   flex-shrink:0;
-  width:148px;
+  /* Este es el bloque más alto de la pantalla (la foto es 1:1, así que el
+     ancho manda el alto), y es de donde más se puede recortar sin que se
+     pierda el producto. Versiones anteriores: 148px y 136px. */
+  width:118px;
   margin:10px auto 0;
 }
 /* La píldora acá no es un botón, solo el recordatorio de lo elegido. */
@@ -394,8 +397,10 @@
 }
 
 /* ---- Panel del resumen ---- */
+/* Los márgenes y paddings de este panel van recortados a propósito: la
+   pantalla completa tiene que caber sin scroll. */
 .academy-mision-panel--resumen{
-  margin-top:16px;
+  margin-top:12px;
   padding:17px 18px 15px;
   background:#fff;
 }
@@ -426,8 +431,8 @@
 .academy-resumen-tabla{
   display:flex;
   flex-direction:column;
-  gap:9px;
-  padding:13px 14px;
+  gap:7px;
+  padding:11px 13px;
   border-radius:12px;
   background:#F1F1F1;
 }
@@ -454,8 +459,8 @@
   align-items:baseline;
   justify-content:space-between;
   gap:10px;
-  margin-top:10px;
-  padding:13px 14px;
+  margin-top:8px;
+  padding:11px 13px;
   border-radius:12px;
   background:#FDF0E2;
   font-family:'Montserrat',sans-serif;
@@ -537,7 +542,7 @@
 @media (max-width:360px){
   .academy-mision-cabezote-titulo{font-size:14px;}
   .academy-mision-cabezote-sub{font-size:11px;}
-  .academy-mision-producto-elegido{width:138px;}
+  .academy-mision-producto-elegido{width:106px;}
 }
 
 /* ============================================================
@@ -1578,7 +1583,7 @@
   display:block;
   width:auto;
   /*max-width:62%;*/
-  max-height:350px;
+  max-height:300px;
   object-fit:contain;
   margin:14px 0 -60px -20px;
   /* Se monta sobre el borde de la hoja blanca, como en la referencia. */
@@ -1596,6 +1601,24 @@
   flex-direction:column;
   align-items:center;
 }
+/* Mensaje de cierre, debajo de la barra llena. */
+.academy-final-mensaje{
+  margin:10px 0 0;
+  max-width:310px;
+  text-align:center;
+  font-family:'Montserrat',sans-serif;
+  font-weight:400;
+  font-size:13px;
+  line-height:1.55;
+  color:#4A4A4A;
+  /* El \n de los datos se respeta: la segunda frase queda en su renglón. */
+  white-space:pre-line;
+}
+.academy-final-mensaje strong{
+  font-weight:800;
+  color:#ED6F2D;
+}
+
 .academy-final-btn{
   width:100%;
   max-width:320px;

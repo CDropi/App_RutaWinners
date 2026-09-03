@@ -161,7 +161,18 @@ export const ACADEMY = {
             // naranja; ese corte lo hace la propia pantalla.
             fondo: 'claro',
             avance: null,
-            imagen: '/media/Codi_Academy_Gana.png',
+            // El personaje cambia según en qué zona cayó el precio: triste
+            // cuando el resultado es malo y ganador cuando es bueno.
+            // El punto de equilibrio va con el triste: no se pierde plata,
+            // pero tampoco se gana nada.
+            personajePorZona: {
+              perdida: '/media/Codi_Academy_Triste.png',
+              equilibrio: '/media/Codi_Academy_Triste.png',
+              minimo: '/media/Codi_Academy_Triste.png',
+              rentable: '/media/Codi_Academy_Gana.png',
+              espejo: '/media/Codi_Academy_Gana.png',
+              premium: '/media/Codi_Academy_Gana.png',
+            },
             etiquetaPrecio: 'Venderías a:',
             etiquetaCostos: 'Tus costos:',
             etiquetaGanancia: 'Ganancia por venta:',
@@ -390,11 +401,19 @@ export const ACADEMY = {
           {
             id: 'final',
             tipo: 'misionCompletada',
+            // Al llegar acá se da por completada TODA la actividad de
+            // Academy y queda el registro en la base de datos. Si algún día
+            // el cierre se mueve a otro paso, se pasa esta bandera y ya.
+            marcaCompletado: true,
             fondo: 'naranja',
             avance: null,
             logoCentrado: true,
             titulo: '¡Misión Academy\ncompletada!',
             personaje: '/media/Codi_Academy_Celebra.png',
+            // En esta pantalla no va el botón de atrás: es un cierre, y la
+            // única salida es la casa (volver a la Ruta Winner).
+            sinAtras: true,
+            mensaje: 'Completaste todos los niveles y\n**te ganaste una clase gratis.**\n\nPasa por el stand de Academy para reclamarla.',
           },
         ],
       },

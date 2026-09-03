@@ -7,6 +7,7 @@ import {
 import {
   buscarPersonaPorId, obtenerTicketsDePersona, elegirDia,
   obtenerStandsCompletados, marcarStandCompletado,
+  obtenerProgresoRuta, marcarAcademyCompletada,
   obtenerPremiosPersona, confirmarPremios, reiniciarDatosDePrueba,
 } from '../lib/dataLayer.js';
 import { useEsMobil } from '../hooks/useEsMobil.js';
@@ -40,10 +41,14 @@ export default function Ingreso() {
   const [navActive, setNavActive] = useState(0);
   const [standActivo, setStandActivo] = useState(null); // stand elegido en el mapa (o null si estamos en el mapa)
   const [standsCompletados, setStandsCompletados] = useState([]); // ids de stands ya "pre-desbloqueados"
-  const [premios, setPremios] = useState({ seleccionados: [], confirmado: false, entregados: [] });
+  // Sin `entregados`: el staff ya no marca entregas, solo consulta.
+  const [premios, setPremios] = useState({ seleccionados: [], confirmado: false });
   const [premiosAbierto, setPremiosAbierto] = useState(false); // pantalla de elegir/ver premios
   const [politicaAbierta, setPoliticaAbierta] = useState(false); // pantalla de política de datos
   const [academyAbierto, setAcademyAbierto] = useState(false); // mini experiencia de Academy
+  // De Academy solo se guarda el sí/no: si esta persona ya completó la
+  // actividad. No interesa en qué paso quedó.
+  const [academyCompletada, setAcademyCompletada] = useState(false);
 
   const videoRef = useRef(null);
 
@@ -113,7 +118,12 @@ export default function Ingreso() {
       setPersona(personaEncontrada);
       setTickets(misTickets);
       setTab('proximos');
-      obtenerStandsCompletados(idValue).then(setStandsCompletados).catch(() => {});
+      // Una sola lectura trae los stands y el estado de Academy (los dos
+      // viven en el mismo documento).
+      obtenerProgresoRuta(idValue).then(progreso => {
+        setStandsCompletados(progreso.completados);
+        setAcademyCompletada(progreso.academy);
+      }).catch(() => {});
       obtenerPremiosPersona(idValue).then(setPremios).catch(() => {});
       // [TEMPORAL - oculto para la primera versión de prueba, no borrar]
       setPromoOpen(true);
@@ -135,6 +145,16 @@ export default function Ingreso() {
   // progreso local (para el mapa y el trofeo) sin tener que recargar todo.
   function manejarStandCompletado(standId) {
     setStandsCompletados(prev => (prev.includes(standId) ? prev : [...prev, standId]));
+  }
+
+  // La llama AcademyView al llegar a la pantalla final de la experiencia.
+  // Se marca de inmediato en pantalla y se guarda en segundo plano: si la
+  // escritura falla (wifi del evento), al menos la sesión en curso no se
+  // queda sin el reconocimiento.
+  function manejarAcademyCompletada() {
+    if (!persona || academyCompletada) return;
+    setAcademyCompletada(true);
+    marcarAcademyCompletada(persona.id).catch(() => {});
   }
 
   // Confirma la selección de premios de forma DEFINITIVA (no se puede
@@ -173,6 +193,9 @@ export default function Ingreso() {
     setTickets(misTickets);
     setStandsCompletados(standsFrescos);
     setPremios(premiosFrescos);
+    // reiniciarDatosDePrueba() también borra el registro de Academy, así que
+    // el estado en pantalla tiene que volver a cero.
+    setAcademyCompletada(false);
   }
 
   // Vuelve a consultar Firestore antes de mostrar "Mis entradas", para que
@@ -292,7 +315,11 @@ export default function Ingreso() {
                 onEmpezar={manejarEmpezarMision}
               />
               */}
-              <AcademyView onSalir={() => setAcademyAbierto(false)} />
+              <AcademyView
+                onSalir={() => setAcademyAbierto(false)}
+                completada={academyCompletada}
+                onCompletar={manejarAcademyCompletada}
+              />
             </div>
           </div>
         )}
@@ -406,6 +433,7 @@ export default function Ingreso() {
                   premios={premios}
                   onAbrirPremios={() => setPremiosAbierto(true)}
                   onAbrirAcademy={() => setAcademyAbierto(true)}
+                  academyCompletada={academyCompletada}
                   onSimularCompletarTodos={simularCompletarTodosLosStands}
                   onSimularReiniciar={simularReiniciarProgreso}
                 />

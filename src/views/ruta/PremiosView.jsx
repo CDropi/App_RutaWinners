@@ -135,8 +135,8 @@ export default function PremiosView({ standsCompletados, premios, onConfirmar, o
             {STANDS.filter(stand => premios.seleccionados.includes(stand.id)).map(stand => {
               // Esta pantalla ya no muestra ningún estado de entrega: solo la
               // selección. Se deja comentado el dato por si más adelante se
-              // quiere volver a diferenciar el premio ya entregado.
-              // const entregado = premios.entregados?.includes(stand.id);
+              // El campo `entregados` se eliminó: el staff ya no registra
+              // entregas, su vista es solo de consulta.
               return (
                 <div key={stand.id} className="premio-card confirmado">
                   {cabecera(stand)}

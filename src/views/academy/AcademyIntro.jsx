@@ -20,12 +20,13 @@ export default function AcademyIntro({ logo, nombre, intro, onSalir, onEmpezar }
           : <span className="academy-badge-texto">{nombre}</span>}
       </div>
 
-      {/* Casa en vez de flecha: este botón no devuelve un paso, sale de
-          Academy y vuelve al mapa de la Ruta Winner. */}
+      {/* Flecha (no casa): esta es la primera pantalla de Academy, así que
+          "atrás" y "salir al mapa" son lo mismo y la flecha se entiende
+          mejor. La casa se usa en las pantallas de más adentro, donde sí hay
+          diferencia entre devolverse un paso y salir de Academy. */}
       <BotonRegresar
         onClick={onSalir}
         flotante
-        icono="/media/Casa.svg"
         etiqueta="Volver a la Ruta Winner"
       />
 
