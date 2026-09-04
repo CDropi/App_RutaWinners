@@ -656,11 +656,36 @@ h1{
 }
 
 /* ---- Menú inferior fijo, anclado a los bordes, sin texto ---- */
+/* .nav-wrapper{                                  */ /* versión anterior (sin z-index) */
+/*   position:relative;                           */
+/*   flex:0 0 auto;                               */
+/*   background:#000;                             */
+/*   padding-bottom:env(safe-area-inset-bottom);  */
+/* }                                              */
+
+/* El z-index es indispensable y solo se notaba en el Mapa:
+   .app-shell lleva z-index:5, así que crea contexto de apilamiento. Dentro
+   de él, .app-scroll NO está posicionado ni tiene z-index, por lo que no
+   crea contexto propio: los z-index de mapa.css (.mapa-plano:6,
+   .mapa-reclamar:8, .mapa-header:9, popups:10/11) NO se quedan dentro del
+   mapa, sino que suben a competir directamente contra .nav-wrapper.
+   Con .nav-wrapper en z-index:auto (0), el fondo sólido de .mapa-plano (6)
+   se pintaba encima del círculo naranja del indicador (que sobresale 22px
+   por arriba de la barra con top:-22px) y lo cortaba a la mitad.
+   Entradas y Perfil no tienen capas con z-index alto, por eso ahí se veía
+   bien.
+   20 lo deja por encima de todo el mapa (máximo 11) y por debajo del
+   overlay del trofeo (.trofeo-overlay, z-index:30 en mapa.css) y de los
+   modales de ticket/promo (150/160), que sí deben tapar la barra.
+   Se corrige acá y no en mapa.css a propósito: bajar el z-index de
+   .mapa-plano rompería su relación con .mapa-stand-encendido (1) y los
+   pines (7). */
 .nav-wrapper{
   position:relative;
   flex:0 0 auto;
   background:#000;
   padding-bottom:env(safe-area-inset-bottom);
+  z-index:20;
 }
 @property --nav-hole-x{
   syntax:'<percentage>';
