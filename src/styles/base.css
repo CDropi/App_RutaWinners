@@ -1,0 +1,372 @@
+/* ============================================================
+   base.css — variables de diseño y componentes compartidos entre
+   las pantallas públicas y la de staff.
+   ============================================================ */
+
+/* ---- Tipografía personalizada: Tusker (títulos) ----
+   Solo se usa el peso bold (TuskerGrotesk-4700Bold), que es el que
+   aplican los títulos en toda la app. Montserrat se carga aparte
+   desde Google Fonts en cada .html. */
+@font-face{
+  font-family:'Tusker';
+  src:
+    url('/fonts/TuskerGrotesk-4700Bold.woff2') format('woff2'),
+    url('/fonts/TuskerGrotesk-4700Bold.ttf') format('truetype');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+
+/* ---- Montserrat auto-hospedada (Light y Bold) ----
+   El resto de los pesos (400/500/600) se siguen cargando desde
+   Google Fonts en cada .html; estos dos pesos los reemplaza tu
+   propia fuente. Coloca los archivos en fonts/ con estos nombres. */
+@font-face{
+  font-family:'Montserrat';
+  src:
+    url('/fonts/Montserrat-Light.woff2') format('woff2'),
+    url('/fonts/Montserrat-Light.ttf') format('truetype');
+  font-weight:300;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Montserrat';
+  src:
+    url('/fonts/Montserrat-Bold.woff2') format('woff2'),
+    url('/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --bg:#0B0F1A;
+  --bg-2:#141a2b;
+  --paper:#FBF9F3;
+  --gold:#E8B23D;
+  --gold-deep:#B8862A;
+  --ink:#10131C;
+  --muted:#7C8398;
+  --green:#2FAE5C;
+  --red:#E0473E;
+  --radius:22px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow-x:hidden;}
+body{
+  font-family:'Montserrat',sans-serif;
+  font-weight:300;
+  color:var(--paper);
+  background:var(--bg);
+}
+
+/* ---- Botón base ---- */
+button{
+  border:none;
+  border-radius:12px;
+  background:var(--gold);
+  color:#241a05;
+  font-weight:700;
+  font-family:'Tusker',sans-serif;
+  font-size:14px;
+  cursor:pointer;
+  transition:transform .15s ease, background .15s ease;
+}
+button:hover{background:#f0bd4f;}
+button:active{transform:scale(.98);}
+button:disabled{opacity:.5;cursor:default;}
+
+/* ---- Spinner de carga ---- */
+.spinner{
+  width:18px;height:18px;
+  border:2px solid rgba(36,26,5,.3);
+  border-top-color:#241a05;
+  border-radius:50%;
+  display:inline-block;
+  animation:spin .7s linear infinite;
+  vertical-align:middle;
+  margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---- Aviso de modo prueba ---- */
+.test-banner{
+  background:rgba(232,178,61,.12);
+  border:1px solid rgba(232,178,61,.35);
+  color:var(--gold);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  letter-spacing:.04em;
+  padding:10px 14px;
+  border-radius:10px;
+  text-align:center;
+}
+
+/* ---- Pantalla de bloqueo: solo se puede usar desde celular ---- */
+/* Esta pantalla se salía de la ventana (y por eso aparecía scroll) porque el
+   Codi podía llegar a 700px de alto y el título a 70px sin ningún tope
+   relativo al viewport, y además no tenía padding: en ventanas menos altas
+   que ~1000px el contenido no cabía.
+   Versión anterior: gap:100px y sin padding. */
+/* Alto exacto y overflow:hidden en vez de min-height: esta pantalla es un
+   cierre informativo (no hay nada que leer más abajo), así que en ventanas
+   bajas es mejor que recorte que que aparezca scroll. Con min-height cualquier
+   par de píxeles de sobra activaba la barra, sobre todo porque html/body
+   llevan overflow-x:hidden y eso vuelve el eje vertical "auto".
+   Versión anterior: min-height:100vh / 100dvh sin overflow. */
+.solo-mobil{
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:clamp(32px, 6vw, 100px);
+  padding:40px clamp(20px, 4vw, 60px);
+}
+
+/* Versión anterior: width:300px fijo. */
+.solo-mobil-img {
+  width: clamp(180px, 20vw, 300px);
+}
+
+/* Versión anterior: width:30% y padding:0 50px (el padding de la pantalla ya
+   da el margen contra el borde). */
+.solo-mobil-info {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* El tamaño se adapta a la ventana en vez de quedar fijo en 70px/85px, que
+   es lo que forzaba el alto.
+   Versión anterior: font-size:70px; margin:0 0 50px; line-height:85px; */
+.solo-mobil-title{
+  font-family:'Tusker',sans-serif;
+  font-weight:700;
+  font-size:clamp(38px, 4.4vw, 70px);
+  margin:0 0 clamp(24px, 3vw, 50px);
+  line-height:1.2;
+}
+
+.solo-mobil-text{
+  font-size:16px;
+  color:white;
+  line-height:1.6;
+  margin:0;
+  text-align: justify;
+}
+
+.solo-mobil-icon{
+  position:relative;
+  display:inline-block;
+}
+/* max-height contra el viewport: es lo que evita que el Codi empuje la
+   pantalla más allá de la ventana.
+   Versión anterior: max-width:700px sin tope de alto. */
+.solo-mobil-icon img{
+  position:relative;
+  z-index:1;
+  width:auto;
+  max-width:min(700px, 45vw);
+  max-height:80vh;
+  display:block;
+}
+
+.solo-mobil-icon::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:6px;
+  transform:translateX(-50%);
+  width:75%;
+  height:70px;
+  background:radial-gradient(ellipse at center, rgba(0, 0, 0, 0.712) 0%, rgba(0,0,0,0) 80%);
+  z-index:0;
+}
+
+/* ---- Login compartido (público en Ingreso, y AuthGate en Staff) ---- */
+.login-card{
+  width:100%;
+  max-width:380px;
+  text-align:center;
+}
+.login-title{
+  font-family:'Tusker';
+  font-size:50px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin: 0;
+}
+
+/* ---- Ajustes para celulares muy angostos (~360px, comunes en Android
+   de gama baja/media) — evita que los títulos grandes se desborden ---- */
+@media (max-width:380px){
+  .login-title{font-size:42px;}
+}
+
+.login-logo{
+  width:120px;
+  height:120px;
+  object-fit:contain;
+  margin:0 auto 10px;
+  display:block;
+}
+
+.login-logo-Staff {
+  width:200px;
+  object-fit:contain;
+  margin:0 auto 18px;
+  display:block;
+}
+.login-subtitle{
+  font-size:15px;
+  color:var(--paper);
+  margin:0 0 14px;
+}
+.login-subtitle strong{font-weight:700;}
+
+.login-input{
+  display: block;
+  width: 100%;
+  box-sizing:border-box;
+  padding:10px 22px;
+  border-radius:15px;
+  border:1px solid rgba(168, 168, 168, 0.35);
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0) 28%, rgba(255,255,255,.40) 46%, rgba(255,255,255,.1) 58%, rgba(255,255,255,0) 74%),
+    linear-gradient(135deg, rgba(92, 92, 92, 0.06), rgba(92,92,92,.01)),
+    rgba(0, 0, 0, .02);
+  background-size:220% 100%, 100% 100%, 100% 100%;
+  background-position:0% 0%, 0% 0%, 0% 0%;
+  backdrop-filter:blur(1px) saturate(30%) brightness(.9);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.18), inset 0 -1px 6px rgba(0,0,0,.1);
+  color:var(--paper);
+  font-size:15px;
+  text-align:center;
+  outline:none;
+  margin-bottom:13px;
+  transition:background-position .6s ease;
+}
+.login-input:focus{background-position:100% 0%, 0% 0%, 0% 0%;}
+
+.login-button{
+  padding:8px 20px;
+  border-radius:999px;
+  background: linear-gradient(to top, #ED6F2D 0%, #8d2e00 100%);
+  border: 1px solid #ed6f2d;
+  color:#fff;
+  font-family:'Montserrat',sans-serif;
+  font-weight:100;
+  font-size:15px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  cursor:pointer;
+  margin:0 0 20px;
+}
+.login-button:hover{background: linear-gradient(to top, #ED6F2D 0%, #8d2e00 100%);}
+
+.login-register{
+  font-size:13px;
+  color:white;
+  margin-bottom: 20px;
+}
+
+.login-register strong{font-weight: 700;}
+
+.login-register a{color:white;font-weight:700;text-decoration:underline;}
+
+.error-msg{
+  color:white;
+  font-size:10px;
+  margin-top:-6px;
+  margin-bottom:12px;
+  display:none;
+  line-height:1.4;
+}
+.error-msg strong{font-weight:700;}
+
+/* ---- AuthGate: login por correo/contraseña (Staff) ---- */
+.staff-login-card{
+  padding:32px 18px;
+}
+
+.Title-Staff {
+  padding: 0 30px;
+  margin-bottom: 10px;
+}
+
+.staff-login-al{
+  font-size:18px;
+  color:var(--paper);
+  margin: 0;
+  font-weight:300;
+  text-align: right;
+}
+.staff-login-input{text-align:left;}
+
+.staff-login-input::placeholder{
+  color:rgba(255,255,255,.45);
+  font-size: 12px;
+}
+
+/* Botón de "ver/ocultar contraseña" dentro del input de la contraseña */
+.staff-password-wrap{position:relative;}
+.staff-password-input{padding-right:46px;}
+.staff-password-toggle{
+  position:absolute;
+  top:50%;
+  right:6px;
+  transform:translateY(-50%);
+  width:32px;height:32px;
+  border:none;
+  background:transparent;
+  color:rgba(255,255,255,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  margin: 1px 0 0;
+}
+.staff-password-toggle img{width:19px;height:19px;display:block;opacity:.5;transition:opacity .15s ease;}
+.staff-password-toggle:hover img,
+.staff-password-toggle:focus img,
+.staff-password-toggle:active img{opacity:1;}
+.staff-password-toggle:hover,
+.staff-password-toggle:focus,
+.staff-password-toggle:active{
+  outline:none;
+  transform:translateY(-50%);
+  color:#fff;
+  background:transparent;
+}
+
+.staff-login-button{
+  padding:7px 20px;
+  border-radius:999px;
+  background:rgba(20,12,6,.55);
+  border: 1px solid rgb(255, 106, 26, .5);
+  color:#fff;
+  font-family:'Montserrat';
+  font-weight:100;
+  font-size:15px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  cursor:pointer;
+  margin:6px 0 22px;
+}
+
+.staff-login-button:hover{background:rgba(20,12,6,.75);}
+
+.staff-login-button:disabled{opacity:.6;cursor:default;}
+
+.auth-gate-loading{
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
