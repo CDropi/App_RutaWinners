@@ -120,11 +120,51 @@ export async function marcarCuentaCreada(idValue) {
 }
 
 // Devuelve los tickets ya elegidos por esta persona (0, 1 o 2)
+//
+// CAMBIADO por la corrección de H-11 (informe de pentest v3): la regla de
+// Firestore ya no permite list() de la colección tickets a los asistentes,
+// solo al staff. Antes esto se resolvía con una query filtrando por
+// personId, pero cualquier cuenta podía omitir el filtro y descargarse los
+// 3.684 tickets con nombre y teléfono de todos.
+//
+// Ahora se resuelve por lectura directa: los documentos de ticketIndex
+// tienen ID predecible ({telefono}_dia{N}), así que se leen esos y de ahí
+// se traen los tickets por su código. Sin query, no hay list() que abusar.
+//
+// Costo: pasa de ~1-2 lecturas a ~3-4 por llamada (2 índices + los tickets
+// que existan). Se paraleliza para no sumar latencia.
+//
+// CÓDIGO ANTERIOR — se deja comentado por si se necesita revertir:
+// export async function obtenerTicketsDePersona(idValue) {
+//   const db = getDb();
+//   const q = query(collection(db, "tickets"), where("personId", "==", idValue));
+//   const snap = await getDocs(q);
+//   return snap.docs.map(d => ({ ticketCode: d.id, ...d.data() }));
+// }
 export async function obtenerTicketsDePersona(idValue) {
   const db = getDb();
-  const q = query(collection(db, "tickets"), where("personId", "==", idValue));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ ticketCode: d.id, ...d.data() }));
+
+  // Los días posibles salen de config para no dejar el 1 y el 2 fijos acá.
+  const dias = EVENTO.dias.map(d => d.id);
+
+  const indices = await Promise.all(
+    dias.map(diaId => getDoc(doc(db, "ticketIndex", `${idValue}_dia${diaId}`)))
+  );
+
+  const codigos = indices
+    .filter(s => s.exists())
+    .map(s => s.data().ticketCode)
+    .filter(Boolean);
+
+  if (codigos.length === 0) return [];
+
+  const tickets = await Promise.all(
+    codigos.map(codigo => getDoc(doc(db, "tickets", codigo)))
+  );
+
+  return tickets
+    .filter(s => s.exists())
+    .map(s => ({ ticketCode: s.id, ...s.data() }));
 }
 
 // Crea la entrada para un día si no existe todavía. Si ya existe, devuelve la existente
