@@ -269,7 +269,7 @@ export const PREGUNTAS_EJEMPLO = [
 //    con una fecha puesta, el staff rechazaría los QR del día que sí
 //    corresponde, y Perfil y la Ruta Winner quedarían abiertas (o cerradas)
 //    el día equivocado.
-export const FECHA_SIMULADA_HOY = "2026-09-12";
+export const FECHA_SIMULADA_HOY = 'null';
 
 // 6) ¿Perfil y Ruta Winner exigen además que la persona ya haya ingresado
 //    al recinto (que el staff le haya escaneado el QR de ese día)?
@@ -278,4 +278,4 @@ export const FECHA_SIMULADA_HOY = "2026-09-12";
 //    con sesión puede ver el mapa y su perfil desde su casa.
 //    En `true` además tiene que tener el check-in hecho del día de hoy, así
 //    que la Ruta Winner solo se puede jugar dentro del evento.
-export const RUTA_EXIGE_CHECKIN = false;
+export const RUTA_EXIGE_CHECKIN = true;
