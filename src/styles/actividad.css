@@ -307,13 +307,14 @@
   color:#111;
   line-height:1.5;
   text-align: center;
-  margin: 0 0 5px;
+  margin: 0 0 15px;
 }
 
 .actividad-opciones{
   display:flex;
   flex-direction:column;
-  margin-bottom:2px;
+  margin-bottom:22px;
+  gap: 15px;
 }
 
 .actividad-opcion{

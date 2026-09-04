@@ -588,7 +588,7 @@
   background:#1a1a1a;
   border-radius:20px;
   border:1px solid rgba(255,255,255,.1);
-  padding:20px;
+  padding:20px 20px 10px;
   box-shadow:0 20px 50px rgba(0,0,0,.5);
 }
 .trofeo-panel-header{
@@ -644,7 +644,7 @@
 
 
 /* ---- Lista agrupada: bloqueados arriba, pre-desbloqueados abajo ---- */
-.trofeo-lista{display:flex;flex-direction:column;gap:18px;margin-bottom:16px;}
+.trofeo-lista{display:flex;flex-direction:column;gap:18px;margin-bottom:8px;}
 .trofeo-grupo{display:flex;flex-direction:column;gap:0;}
 
 /* Encabezado de cada grupo. La línea a la derecha se hace con ::after para
