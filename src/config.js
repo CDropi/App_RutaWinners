@@ -269,7 +269,7 @@ export const PREGUNTAS_EJEMPLO = [
 //    con una fecha puesta, el staff rechazaría los QR del día que sí
 //    corresponde, y Perfil y la Ruta Winner quedarían abiertas (o cerradas)
 //    el día equivocado.
-export const FECHA_SIMULADA_HOY = null;
+export const FECHA_SIMULADA_HOY = "2026-09-12";
 
 // 6) ¿Perfil y Ruta Winner exigen además que la persona ya haya ingresado
 //    al recinto (que el staff le haya escaneado el QR de ese día)?
