@@ -61,7 +61,7 @@ export const IMAGEN_MAPA_PLANO = "/media/Fondo_Mapa.png";
 
 export const STANDS = [
   {
-    id: "roax", nombre: "Roax", x: 29, y: 25, qrCode: "RUTA-ROAX",
+    id: "roax", nombre: "Roax", x: 29, y: 26.5, qrCode: "RUTA-ROAX",
     colorPrimario: "#5C00D3",
     imagenFondo: "/media/Fondo_Roax.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_Roax.png",
@@ -82,7 +82,7 @@ export const STANDS = [
     ],
   },
   {
-    id: "confio", nombre: "Confío Pagos", x: 71, y: 25.5, qrCode: "RUTA-CONFIO",
+    id: "confio", nombre: "Confío Pagos", x: 71, y: 27, qrCode: "RUTA-CONFIO",
     colorPrimario: "#8FE2AF",
     imagenFondo: "/media/Fondo_Confio.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_Confio.png",
@@ -103,7 +103,7 @@ export const STANDS = [
     ],
   },
   {
-    id: "atom", nombre: "ATOM", x: 9, y: 41.8, qrCode: "RUTA-ATOM",
+    id: "atom", nombre: "ATOM", x: 9, y: 43.3, qrCode: "RUTA-ATOM",
     colorPrimario: "#0DE8C0",
     imagenFondo: "/media/Fondo_Atom.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_Atom.png",
@@ -124,7 +124,7 @@ export const STANDS = [
     ],
   },
   {
-    id: "chateapro", nombre: "Chatea Pro", x: 91, y: 41.5, qrCode: "RUTA-CHATEAPRO",
+    id: "chateapro", nombre: "Chatea Pro", x: 91, y: 43, qrCode: "RUTA-CHATEAPRO",
     colorPrimario: "#009ee3",
     imagenFondo: "/media/Fondo_Chatea.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_ChateaPro.png",
@@ -145,7 +145,7 @@ export const STANDS = [
     ],
   },
   {
-    id: "fenix", nombre: "Fénix", x: 17.2, y: 59.8, qrCode: "RUTA-FENIX",
+    id: "fenix", nombre: "Fénix", x: 17.2, y: 61.3, qrCode: "RUTA-FENIX",
     colorPrimario: "#1c8e40",
     imagenFondo: "/media/Fondo_Fenix.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_Fenix.png",
@@ -167,7 +167,7 @@ export const STANDS = [
     ],
   },
   {
-    id: "dropipay", nombre: "DropiPay", x: 84.8, y: 60, qrCode: "RUTA-DROPIPAY",
+    id: "dropipay", nombre: "DropiPay", x: 84.8, y: 61.5, qrCode: "RUTA-DROPIPAY",
     colorPrimario: "#f4993c",
     imagenFondo: "/media/Fondo_DropiPay.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_DropiPay.png",
@@ -188,7 +188,7 @@ export const STANDS = [
     ],
   }, 
   {
-    id: "groupack", nombre: "Groupack", x: 49, y: 66, qrCode: "RUTA-GROUPACK",
+    id: "groupack", nombre: "Groupack", x: 49, y: 67.5, qrCode: "RUTA-GROUPACK",
     colorPrimario: "#fbea20",
     imagenFondo: "/media/Fondo_Groupack.png",
     imagenMapaCompletado: "/media/Fondo_Mapa_Groupack.png",
@@ -221,7 +221,7 @@ export const PUNTO_ACADEMY = {
   id: "academy",
   nombre: "Academy",
   x: 50,
-  y: 51,
+  y: 53.1,
   logo: "/media/Logo_Academy.png",
   // Etiqueta pequeña arriba del nombre, para que se entienda que no es una
   // marca más de la ruta.
